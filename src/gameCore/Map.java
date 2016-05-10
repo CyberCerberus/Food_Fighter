@@ -2,10 +2,12 @@ package gameCore;
 
 public class Map {
 	private Room[][] rooms;
+	private int level;
 	private int startx;
 	private int starty;
 	
-	public Map(int h, int w) {
+	public Map(int l, int h, int w) {
+		level = l;
 		rooms = new Room[h][w];
 	}
 	
@@ -27,7 +29,11 @@ public class Map {
 		return rooms[x][y];
 	}
 	
-	public void addRoom(int x, int y, Room r) {
+	void addRoom(int x, int y, Room r) {
 		rooms[x][y] = r;
+	}
+	
+	public int getLevel() {
+		return level;
 	}
 }

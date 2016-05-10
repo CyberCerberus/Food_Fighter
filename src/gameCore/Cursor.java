@@ -73,7 +73,13 @@ public class Cursor {
 				
 			}
 			else if(comm.trim().equalsIgnoreCase("enter")) {
-				done = enter();
+				if(enter()) {
+					System.out.println("Do you wish to exit the dungon?\ny/n");
+					comm = kb.nextLine();
+					if(comm.trim().equalsIgnoreCase("y")) {
+						done = true;
+					}
+				}
 			}
 			else if(comm.substring(0, 6).equalsIgnoreCase("equip ")) {
 				System.out.println("Unimplmented command");

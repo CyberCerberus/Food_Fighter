@@ -1,11 +1,11 @@
 package gameCore;
-import java.util.Scanner;
+import java.util.*;
 
 public class Hero extends Character{
     private String className;
     private int hp;
     private Party party;
-    private Skill skill1, skill2, skill3; //may become an array later
+    private Skill skill1, skill2, skill3; //may become an array later, can't be null
    
    public Hero(String name, String className, int maxHP, int str, int def, int spd,
                Party p, Skill s1, Skill s2, Skill s3){
@@ -57,9 +57,9 @@ public class Hero extends Character{
             }
             
             updateBuff(strChange, defChange, spdChange, time);
-            //skill1.restore(skillchagre);
-            //skill2.restore(skillchagre);
-            //skill3.restore(skillchagre);
+            skill1.restore(skillchagre);
+            skill2.restore(skillchagre);
+            skill3.restore(skillchagre);
         }
         //reviving
         else if(isDead() && rev) {
@@ -77,7 +77,7 @@ public class Hero extends Character{
         }
         //already dead
         else {
-            System.out.println(this + " is dead");
+            System.out.println(this + " is already dead");
         }
     }
     
@@ -87,61 +87,39 @@ public class Hero extends Character{
             System.out.println("enemies is empty!");
             return null;
         }
-        //Scanner kb = new Scanner(System.in);
+        Scanner kb = new Scanner(System.in); //do not close!
         
-        //Action a = chooseAction(target, kb);
+        Action a = chooseAction(enemies, kb);
+       /*
         Character user = this;
         Action a = new Action(user, toString() + " punched " + enemies[0].toString(),
         		-1 * super.getStr(), false, enemies);
+        */
         return a;
-    }
-
-    private Character[] chooseTarget(Character[] choices, Scanner kb) {
-        int choice = 0, count = 0;
-        //forced to make choice
-        while(true) {
-            for(Character c: choices) {
-                System.out.printf("%i. %s\n", count + 1, c);
-                count++;
-            }
-            count = 0;
-            try{
-                choice = kb.nextInt();
-                Character[] c = {choices[choice -1]};
-                kb.nextLine();
-                return c;
-            }
-            catch(ArrayIndexOutOfBoundsException e) {
-                System.out.println("INVALID, Please choose from the options below");
-            }
-            catch(Exception e) {
-                System.out.println("INVALID, You must enter a number specifed above");
-            }
-        }
     }
     
     private Action chooseAction(Character[] enemies, Scanner kb) {
         int choice = 0;
         while(true) {
             System.out.println(this);
-            System.out.println("1. attack, 2. skills, 3. items.");
+            System.out.println("1. attack, 2. skills, 3. items");
             
-            /*
+            
              try {
                 choice = kb.nextInt();
              }
-             catch {
-                System.out.print("Please enter a number next time as that was an ");
+             catch(Exception e) {
+                System.out.println("Ok, im pretty sure that dosen't count as a number...");
                 choice = 0;
              }
              kb.nextLine();
-             */
+             
             
-            choice = 1;
+            //choice = 1;
             if(choice == 1) {
                 Character[] target = chooseTarget(enemies, kb);
                 Character user = this;
-                return new Action(user, toString() + " attacked " + target,
+                return new Action(user, toString() + " attacked " + target[0].toString(),
                                   -1 * super.getStr(), false, target);
             }
             else if(choice == 2) {
@@ -161,6 +139,35 @@ public class Hero extends Character{
             else {
                 System.out.println("Invalid choice!");
             }
+        }
+    }
+    
+    private Character[] chooseTarget(Character[] choices, Scanner kb) {
+        int choice = 0, count = 0;
+        //forced to make choice
+        System.out.println("Choose one of the folowing targets.");
+        while(true) {
+            for(Character c: choices) {
+                System.out.printf("%d. %s\n", count + 1, c);
+                count++;
+            }
+            count = 0;
+            try{
+                choice = kb.nextInt();
+                Character[] c = {choices[choice -1]};
+                return c;
+            }
+            catch(ArrayIndexOutOfBoundsException e) {
+                System.out.println("INVALID, That was not a given option!");
+            }
+            catch(InputMismatchException e) {
+                System.out.println("INVALID, You must enter an acutal number!");
+            }
+            catch(Exception e) {
+                System.out.println("INVALID, What the heck are you trying to enter?!?");
+            }
+            kb.nextLine();
+            choice = 0;
         }
     }
     
