@@ -2,7 +2,9 @@ package gameCore;
 
 public class SimpleCombatTest {
 	public static void main(String...args) {
-		Party p = new Party();
+		Battle.testfight();
+		
+		/*Party p = new Party();
 		Character[] friend = {new Hero("Jerry", "Chef", 100, 35, 15, 10,
 				p, null, null, null)};
 		Character[] foe = {new Monster("MOTHER", 100, 10, 10, 10)};
@@ -13,5 +15,6 @@ public class SimpleCombatTest {
 			foe[0].attack(friend).takeAction();	
 			System.out.println();
 		}
+		*/
 	}
 }

@@ -73,6 +73,9 @@ public class Action implements Comparable<Action> {
                 		defChange, spdChange, time, revive);
             }
         }
+        else {
+        	System.out.println(user + " is defeated and can not act");
+        }
     }
     
 }
