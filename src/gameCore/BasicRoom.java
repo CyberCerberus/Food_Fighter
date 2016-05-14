@@ -3,6 +3,7 @@ package gameCore;
 public class BasicRoom extends Room {
 	private int item;
 	private int itemnum;
+	private int multi;
 	private int mon1;
 	private int mon2;
 	private int mon3;
@@ -33,7 +34,7 @@ public class BasicRoom extends Room {
 		super.setWalls(walls);
 	}
 	
-	public BasicRoom(int i, int in, int m, int mn, boolean[] walls, boolean end) {
+	public BasicRoom(int i, int in, int multi, int m, boolean[] walls, boolean end) {
 		super();
 		item = i;
 		itemnum = in;
@@ -58,5 +59,11 @@ public class BasicRoom extends Room {
 	public void draw() {
 		//white box
 	}
+	
+	@Override
+	public String getDescript() {
+		return "A standard room for testing purposes";
+	}
+
 
 }

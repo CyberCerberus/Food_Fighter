@@ -104,7 +104,7 @@ public class Cursor {
 				System.out.println("invalid command, type 'help' to get a list of commands");
 			}
 		}
-        System.out.println("You Cleared the Dungeon! (Dun dun dun dun dun dun, dun, dun dun!");
+        System.out.println("You Cleared the Dungeon! (Dun dun dun dun dun dun, dun, dun dun!)");
 		kb.close();
 	}
 }

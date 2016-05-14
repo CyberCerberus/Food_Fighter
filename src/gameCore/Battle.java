@@ -14,9 +14,9 @@ public class Battle {
 	public static boolean testfight(Party p) {
 		Character[] friend = p.toArray();
 		
-		Skill ms1 = new Skill("Scold", " scolded ", 200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill ms1 = new Skill("Scold", " scolded ", -200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
-		Skill es1 = new Skill("Crush", " crushed ", 200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill es1 = new Skill("Crush", " crushed ", -200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
 		Character[] foe = {new Monster("MOTHER", 90, 50, 20, 20, ms1, 0.4), 
 				new Monster("EARTH", 90, 50, 20, 20, es1, 0.4)};
@@ -64,17 +64,17 @@ public class Battle {
 	
 	public static boolean testfight() {
 		Party p = new Party();
-		Skill js1 = new Skill("Stab", " stabbed ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-		Skill js2 = new Skill("Kick", " kicked ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-		Skill js3 = new Skill("Slap", " slapped ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill js1 = new Skill("Stab", " stabbed ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill js2 = new Skill("Kick", " kicked ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill js3 = new Skill("Slap", " slapped ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
-		Skill bs1 = new Skill("Tickle", " tickled ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-		Skill bs2 = new Skill("Stomp", " stompped ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-		Skill bs3 = new Skill("Punch", " punched ", 75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill bs1 = new Skill("Tickle", " tickled ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill bs2 = new Skill("Stomp", " stompped ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill bs3 = new Skill("Punch", " punched ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
-		Skill ms1 = new Skill("Scold", " scolded ", 200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill ms1 = new Skill("Scold", " scolded ", -200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
-		Skill es1 = new Skill("Crush", " crushed ", 200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+		Skill es1 = new Skill("Crush", " crushed ", -200, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
 		
 		Character[] friend = {new Hero("Jerry", "Chef", 100, 50, 15, 4,
 				p, js1, js2, js3), new Hero("Berry", "Cook", 100, 50, 15, 10,

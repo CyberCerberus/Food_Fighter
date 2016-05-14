@@ -2,7 +2,7 @@ package gameCore;
 
 public class MapTest {
 	public static void main(String...args) {
-		Map map = new Map(0, 1, 3);
+		Map map = new Map(0, "Test Map", 1, 3);
 		boolean[] w = {true, false, false, false};
 		map.addRoom(0, 0, new BasicRoom(w));
 		boolean[] w1 = {true, true, false, false};

@@ -2,12 +2,14 @@ package gameCore;
 
 public class Map {
 	private Room[][] rooms;
+	private String name;
 	private int level;
 	private int startx;
 	private int starty;
 	
-	public Map(int l, int h, int w) {
+	public Map(int l, String n, int h, int w) {
 		level = l;
+		name = n;
 		rooms = new Room[h][w];
 	}
 	
