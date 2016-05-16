@@ -175,8 +175,41 @@ public class Hero extends Character{
         //use party reference to get array of team mates for heal skills and items
         //should allow for players to go back and choose another option
         //unless skill has been picked
+    	int choice = 0;
+    	   	
+    	while(true){
+    		System.out.println("Choose one of the following skills:");
+        	System.out.println(	"1: " + skill1 + "\n" +
+        						"2: " + skill2 + "\n" +
+        						"3: " + skill3);
+    		try{
+        		choice = kb.nextInt();
+        		if(choice < 1 || choice > 3){
+        			System.out.println("Invalid option!");
+        		}
+        		else{
+        			switch(choice){
+        				case 1:
+        					return skill1.makeAction(this, enemies);
+        				case 2:
+        					return skill2.makeAction(this, enemies);
+        				case 3:
+        					return skill3.makeAction(this, enemies);
+        					
+        			}
+        		}
+        		
+        		
+        	}
+        	catch(InputMismatchException e){
+        		System.out.println("Invalid number!");
+        	}
+    		
+    	}
+    	
+    	
         
-        return null;
+        
     }
     
     private Action chooseItem(Character[] enemies, Scanner kb) {
@@ -184,8 +217,40 @@ public class Hero extends Character{
         //you can also use party to retrieve the inventory object
         //should allow for players to go back and choose another option
         //unless item has been picked
+    	int[] items = party.getInvintory().getItems();
+    	int choice = 0;
+    	while(true){
+    		System.out.println("Select an item from the following list: ");
+    		for(int i = 1; i <= items.length; i++){
+    			System.out.println(i + ". " + "health pot.");
+    			//Based on the index this will print out the item
+    		}
+    		try{
+    			choice = kb.nextInt();
+    			if(choice < 1 || choice > items.length){
+    				System.out.println("Invalid choice.");
+    			}
+    			//based on the choice, an action will be created
+    			else if(items[choice - 1] > 0){
+    				Character user = this;
+    				Character[] c = {user};
+        			Action a = new Action(user, user + "uses a health pot", 1, false, c);
+        			party.getInvintory().decrementItem(choice - 1);
+        			return a;
+    			}
+    			else{
+    				System.out.println("No more of that item!");
+    				//will just return null for now to exit the loop
+    				return null;
+    			}
+    			
+    			
+    		}catch(NumberFormatException e){
+    			System.out.println("Invalid number.");
+    		}
+    		
+    	}
         
-        return null;
     }
     
     public String toString() {
