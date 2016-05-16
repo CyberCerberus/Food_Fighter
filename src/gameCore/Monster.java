@@ -1,4 +1,8 @@
 package gameCore;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 public class Monster extends Character{
     
     private int fill;
@@ -110,7 +114,8 @@ public class Monster extends Character{
             System.out.println("enemies is empty!");
             return null;
         }
-        Character user = this;
+        Random random = new Random();
+        Character user = this; 
         /* OK, so this should first randomly select a skill OR a basic attack
          * Then after that if a basic attack or attack skill is selected, to
          * randomly select a (Living) target from the avalable options (ie the heros)
@@ -118,15 +123,53 @@ public class Monster extends Character{
          * requires more intelegence to the monster ai (as well as a monster party)
          * so we could go for a self healing skill but we may stay at that
          */
-        Action a = new Action(user, this + " punched " + enemies[0].toString(),
-        		-1 * super.getStr(), false, enemies[0]);
-        return a;
+        Character[] targets = validTargets(enemies);
+        int targetNum = random.nextInt(targets.length);
+        
+        double skillCheck = random.nextDouble();
+        Skill useSkill = skillChoice(random);
+        
+        if(useSkill != null){
+        	return useSkill.makeAction(user, targets);
+        }
+        else{
+        	Action a = new Action(user, this + " punched " + enemies[targetNum].toString(),
+	        		-1 * super.getStr(), false, enemies[targetNum]);
+	        return a;
+        }
     }
     
+    public Character[] validTargets(Character[] heroes){
+    	try{
+    		int liveHeroes = 0;
+	    	List<Character> ara = new ArrayList<Character>();
+	    	for(int i = 0; i < heroes.length; i++){
+	    		if(!heroes[i].isDead()){
+	    			ara.add(heroes[i]);
+	    			liveHeroes++;
+	    		}
+	    	}
+	    	Character[] targets = new Character[liveHeroes];
+	    	for(int j =0; j < liveHeroes; j++)
+	    		targets[j] = ara.get(j);
+	    	return targets;
+    	}
+    	catch(Exception e){
+    		System.out.println(e);
+    	}
+		return heroes;
+    }
+    
+    public Skill skillChoice(Random r){
+    	int rand = r.nextInt(2);
+    	double chance = r.nextDouble();
+    	
+    	if(rand == 0 && skill1chance >= (1 - chance))
+    			return skill1;
+    	else if(rand == 1 && skill2chance >= (1 - chance))
+    			return skill2;
+    	else if(skill3chance >= (1 - chance))
+    			return skill3;
+    	return null;
+    }
 }
-
-
-
-
-
-
