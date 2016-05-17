@@ -5,6 +5,22 @@ public class Invintory {
     
 	private int[] items;
 	Invintory() {
-		items = new int[1];
+		items = new int[]{1};
+		
+	}
+	
+	public int[] getItems(){
+		return items;
+	}
+	
+	public void decrementItem(int i){
+		if(i >= 0 && i < items.length){
+			if(items[i] > 0){
+				items[i]--;
+			}
+		}
+		else{
+			throw new IllegalArgumentException("Invalid inventory index.");
+		}
 	}
 }
