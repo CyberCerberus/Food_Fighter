@@ -11,6 +11,7 @@ public abstract class Room {
 	
 	public abstract boolean triggerEvent(Party p);
 	public abstract void draw();
+	public abstract String getDescript();
 	
 	protected void setWalls(boolean[] w) {
 		for(int i = 0; i < 4; i++) {
@@ -22,6 +23,7 @@ public abstract class Room {
 		explored = true;
 	}
 	
+	//0 up, 1 down, 2 left, 3 right
 	public boolean canMove(int d) {
 		if(!explored) {
 			System.out.println("Room has not been explored!");
@@ -31,4 +33,5 @@ public abstract class Room {
         	System.out.println("There is a wall there");
         return walls[d];
 	}
+	
 }
