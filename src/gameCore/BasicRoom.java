@@ -5,9 +5,6 @@ public class BasicRoom extends Room {
 	private int itemnum;
 	private int multi;
 	private int mon1;
-	private int mon2;
-	private int mon3;
-	private int mon4;
 	private boolean end;
 	
 	public BasicRoom(boolean[] walls) {
@@ -15,9 +12,6 @@ public class BasicRoom extends Room {
 		item = -1;
 		itemnum = 0;
 		mon1 = -1;
-		mon2 = -1;
-		mon3 = -1;
-		mon4 = -1;
 		end = false;
 		super.setWalls(walls);
 	}
@@ -27,9 +21,6 @@ public class BasicRoom extends Room {
 		item = -1;
 		itemnum = 0;
 		mon1 = -1;
-		mon2 = -1;
-		mon3 = -1;
-		mon4 = -1;
 		end = e;
 		super.setWalls(walls);
 	}
@@ -39,20 +30,24 @@ public class BasicRoom extends Room {
 		item = i;
 		itemnum = in;
 		mon1 = m;
-		mon2 = -1;
-		mon3 = -1;
-		mon4 = -1;
 		this.end = end;
 		super.setWalls(walls);
 	}
 	
 	@Override
-	public boolean triggerEvent(Party p) {
-		System.out.println("HELLO FROM THIS ROOM");
-		//Battle.fight(p, Factory.monsterFactory(mon));
-		//p.reward(item, itemnum);
-		super.explored();
-		return end;
+	public boolean triggerEvent(Party p) throws GameOverException {
+		if(!super.getExplored()) {
+			System.out.println("You encountered Monsters!");
+			Battle.fight(p, Factory.monsterFactory(mon1, multi));
+			System.out.println("You found some items!");
+			p.reward(item, itemnum);
+			super.explored();
+			return end;
+		}
+		else {
+			System.out.println("The room is empty");
+			return end;
+		}
 	}
 
 	@Override
@@ -62,7 +57,9 @@ public class BasicRoom extends Room {
 	
 	@Override
 	public String getDescript() {
-		return "A standard room for testing purposes";
+		String ret = "A standard room for testing purposes\n";
+		ret += super.toString();
+		return ret;
 	}
 
 

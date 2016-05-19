@@ -63,7 +63,7 @@ public abstract class Character{
     
     public String toString() {
         if(dead) {
-            return "(dead)"+ name;
+            return name + " (dead)";
         }
         return name;
     }

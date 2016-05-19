@@ -1,16 +1,17 @@
 package gameCore;
 
 public class Skill {
-    private String name, flavor;
+    private String name, flavor, description;
     private int raw, time, usesMax, uses;
     private double skillcharge, strChange, defChange, spdChange;
-    private boolean revive;
+    private boolean revive, aoe;
     
     //flavor in skills should be " blah blah " to add the user and target(s)
     
-    public Skill(String name, String flavor, int raw, double sc, double strc,
-                 double defc, double spdc, int time, boolean rev, int uses) {
+    public Skill(String name, String desc, String flavor, int raw, double sc, double strc,
+                 double defc, double spdc, int time, boolean rev, int uses, boolean aoe) {
         this.name = name;
+        this.description = desc;
         this.flavor = flavor;
         this.raw = raw;
         this.skillcharge = sc;
@@ -20,6 +21,7 @@ public class Skill {
         this.time = time;
         this.revive = rev;
         this.uses = this.usesMax = uses;
+        this.aoe = aoe;
     }
     
     public boolean canUse() {
@@ -57,9 +59,23 @@ public class Skill {
         }
         return null;
     }
+    
+    public boolean isAttack() {
+    	if(raw > 0) {
+    		return false;
+    	}
+    	return true;
+    }
+    
+    public boolean isAOE() {
+    	return aoe;
+    }
            
     public String toString() {
         return name;
+    }
+    public String display() {
+    	return name + " " + uses + "/" + usesMax + " - " + description;
     }
     
 }

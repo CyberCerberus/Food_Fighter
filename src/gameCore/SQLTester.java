@@ -1,11 +1,13 @@
 package gameCore;
 
+
+
 public class SQLTester {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws GameOverException {
 		SQL.setup();
-		System.out.println(SQL.getItemName(0));
-		System.out.println(SQL.getItemDescr(0));
+		System.out.println(SQL.getItemIndex("Test Item"));
+		System.out.println(SQL.getItemDescr("Test Item"));
 		
 		int [] temp = {0};
 		String [] stemp = SQL.getAllItems(temp);
@@ -14,8 +16,11 @@ public class SQLTester {
 		}
 		Party p = new Party();
 		Character h = Factory.heroFactory("Johny", 0, p);
-		System.out.println(h);
-		
+		p.addHero((Hero)h);
+		p.addHero(Factory.heroFactory("Garry", 0, p));
+		p.addHero(Factory.heroFactory("Bobby", 0, p));
+		p.addHero(Factory.heroFactory("Poppy", 0, p));
+
 		Character[] m = {Factory.monsterFactory(0, 1)};
 		for(Character c: m) {
 			System.out.println(c);

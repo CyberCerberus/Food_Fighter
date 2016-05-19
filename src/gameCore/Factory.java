@@ -85,7 +85,7 @@ public class Factory {
 		return r;
 	}
 	
-	public static Action itemFactory(int itemid, Character user, Character[] targets) {
+	public static Action itemFactory(int itemid, Character user, Character...targets) {
 		Connection conn = SQL.connectFF();
 		PreparedStatement selectItem;
 		ResultSet item;
@@ -95,7 +95,7 @@ public class Factory {
 			selectItem = conn.prepareStatement(sql);
 			selectItem.setInt(1, itemid);
 			item = selectItem.executeQuery();
-			a = new Action(user, user + " used " + item.getString(2), 
+			a = new Action(user, user + " used a(n) " + item.getString(2), 
 					item.getInt(4), item.getDouble(5), item.getDouble(6),
 					item.getDouble(7), item.getDouble(8), item.getInt(9), 
 					item.getBoolean(10), targets);
@@ -142,9 +142,12 @@ public class Factory {
 			
 		}
 		else {
-			Skill s1 = new Skill("Stab", " stabbed ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-			Skill s2 = new Skill("Kick", " kicked ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
-			Skill s3 = new Skill("Slap", " slapped ", -75, 0.0, 0.0, 0.0, 0.0, 0, false, 5);
+			Skill s1 = new Skill("Stab", "Stab one foe", " stabbed ",
+					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
+			Skill s2 = new Skill("Kick", "Kick one foe", " kicked ", 
+					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
+			Skill s3 = new Skill("Slap", "Slap one foe", " slapped ", 
+					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
 			
 			h = new Hero(name, "Cook", 150, 25, 25, 25, p, s1, s2, s3);
 		}
@@ -154,21 +157,21 @@ public class Factory {
 	private static Skill skillFactory(int skillid) {
 		//SQL call to the skill table to get the relevant information
 		if(skillid == -1) {
-			return null;
+			return new NullSkill();
 		}
 		Connection conn = SQL.connectFF();
 		PreparedStatement selectSkill;
 		ResultSet skill;
-		Skill s = null;
+		Skill s = new NullSkill();
 		String sql = "SELECT * FROM SkillList WHERE ? = skillid";
 		try {
 			selectSkill = conn.prepareStatement(sql);
 			selectSkill.setInt(1, skillid);
 			skill = selectSkill.executeQuery();
-			s = new Skill(skill.getString(2), skill.getString(4), 
+			s = new Skill(skill.getString(2), skill.getString(3), skill.getString(4), 
 					skill.getInt(5), skill.getDouble(6), skill.getDouble(7),
 					skill.getDouble(8), skill.getDouble(9), skill.getInt(10),
-					skill.getBoolean(11), skill.getInt(12));
+					skill.getBoolean(11), skill.getInt(12), skill.getBoolean(13));
 			conn.close();
 		}
 		catch(SQLException e) {

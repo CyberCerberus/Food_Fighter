@@ -27,6 +27,10 @@ public class Map {
 		return i;
 	}
 	
+	public String toString() {
+		return name;
+	}
+	
 	public Room getRoom(int x, int y) {
 		return rooms[x][y];
 	}
