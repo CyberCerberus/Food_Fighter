@@ -24,21 +24,24 @@ public class SQL {
 			conn.close();
 		}
 		catch(SQLException e) {
-			System.err.println("Something went wrong\n" + e.getMessage());
+			System.err.println("Something went wrong in the setup\n"
+					+ "Try to add/remove drop statemnts in makeTables\n" + e.getMessage());
 		}
 	}
 	
-	public static String getItemName(int itemid) {
+	public static int getItemIndex(String iname) {
 		Connection conn = connectFF();
 		PreparedStatement selectItem;
 		ResultSet item;
-		String sql = "SELECT name FROM ItemList WHERE ? = itemid";
-		String ret = "";
+		int ret = -1;
+		String sql = "SELECT itemid FROM ItemList WHERE name LIKE ?";
 		try {
 			selectItem = conn.prepareStatement(sql);
-			selectItem.setInt(1, itemid);
+			selectItem.setString(1, iname);
 			item = selectItem.executeQuery();
-			ret = item.getString(1);
+			if(item.next()) {
+				ret = item.getInt(1);
+			}
 			conn.close();
 		}
 		catch(SQLException e) {
@@ -47,18 +50,19 @@ public class SQL {
 		return ret;
 	}
 	
-	public static String getItemDescr(int itemid) {
+	public static String getItemDescr(String iname) {
 		Connection conn = connectFF();
 		PreparedStatement selectItem;
 		ResultSet item;
-		String ret = "";
-		String sql = "SELECT name, description FROM ItemList WHERE ? = itemid";
+		String ret = "Item not found!";
+		String sql = "SELECT description FROM ItemList WHERE name LIKE ?";
 		try {
 			selectItem = conn.prepareStatement(sql);
-			selectItem.setInt(1, itemid);
+			selectItem.setString(1, iname);
 			item = selectItem.executeQuery();
-			ret = item.getString(1);
-			ret = ret + ": " + item.getString(2);
+			if(item.next()) {
+				ret = item.getString(1);
+			}
 			conn.close();
 		}
 		catch(SQLException e) {
@@ -121,6 +125,7 @@ public class SQL {
 	                  + "time int DEFAULT 0,"
 	                  + "revive boolean DEFAULT false,"
 	                  + "uses int,"
+	                  + "aoe boolean DEFAULT false,"
 	                  + "PRIMARY KEY (skillid));"
 	                  + ""
 	                  + "DROP TABLE Bestiary;"
@@ -140,14 +145,6 @@ public class SQL {
 	                  + "skill3 int DEFAULT -1,"
 	                  + "skill3chance float DEFAULT 0.0,"
 	                  + "PRIMARY KEY (monid));"
-	                  + ""
-	                  + "DROP TABLE RoomType;"
-	                  + ""
-	                  + "CREATE TABLE IF NOT EXISTS RoomType " 
-	                  + "(type int,"
-	                  + "name, varchar,"
-	                  + "description varchar,"
-	                  + "PRIMARY KEY (type));"
 	                  + ""
 	                  + "DROP TABLE Levels;"
 	                  + ""
@@ -187,7 +184,7 @@ public class SQL {
 	
 	private static void fillTables(Connection c) throws SQLException {
 		Statement stmt;
-		stmt = c.createStatement();
+		stmt = c.createStatement();// true = 1, false = 0
 	      String sql = ""
 	      			 + "INSERT INTO ItemList (itemid, name, description, raw, skill, str, "
 	      			 + "def, spd, time)"
@@ -196,23 +193,20 @@ public class SQL {
 	      		     + ";"
 	      		     + ""
 	      		     + "INSERT INTO SkillList (skillid, name, description,flavor,raw,skill,"
-	      		     + "str, def, spd, time, revive, uses)"
+	      		     + "str, def, spd, time, revive, uses, aoe)"
 	      		     + "VALUES (0, 'Test Skill', 'For testing only', "
-	      		     + "' used shop da whop on ', -500, 0, 0, 0, 0, 0, false, 2)"
+	      		     + "' used shop da whop on ', -500, 0, 1.0, 1.0, 1.0, 0, 0, "
+	      		     + "1, 0)"
 	      		     + ";"
 	      		     + ""
 	      		     + "INSERT INTO Bestiary (monid, name, description,hp,str,def,spd,"
 	      		     + "skill1, skill1chance, skill2, skill2chance, skill3, skill3chance)"
-	      		     + "VALUES (0, 'Test Monster', 'For testing only', 999, 30, 5, 15,"
-	      		     + "-1, 0, -1, 0, -1, 0)"
+	      		     + "VALUES (0, 'Test Monster', 'For testing only', 300, 30, 5, 15,"
+	      		     + "0, .25, -1, 0, -1, 0)"
 	      		     + ";"
 	      		     + ""
-	      		     + "INSERT INTO RoomType (type, name, description)"
-	      		     + "VALUES (0, 'Basic Room', 'A standard room for testing purposes')"
-	      		     + ";"
-	      		     + ""
-	      		     + "INSERT INTO Levels (levelid, name, height,width,multi)"
-	      		     + "VALUES (0, 'Test Level', 1,3,1)"
+	      		     + "INSERT INTO Levels (levelid, name, height, width, multi)"
+	      		     + "VALUES (0, 'Test Level', 1, 3, 1)"
 	      		     + ";"
 	      		     + ""
 	      		     + "INSERT INTO Rooms (levelid, x, y, walls,exits,type,reward,"
@@ -224,5 +218,56 @@ public class SQL {
 	      stmt.executeUpdate(sql);
 	      stmt.close();
 	      System.out.println("Data inserted successfully");
+	}
+	
+	private static void fillTestTables(Connection c) throws SQLException {
+		Statement stmt;
+		stmt = c.createStatement();// true = 1, false = 0
+	      String sql = ""
+	      			 + "INSERT INTO ItemList (itemid, name, description, raw, skill, str, "
+	      			 + "def, spd, time)"
+	      			 + "VALUES (0, 'Test Item', 'For testing only', "
+	      			 + "35, 0, 0, 0, 0, 0)"
+	      		     + ";"
+	      		     + ""
+	      		     + "INSERT INTO SkillList (skillid, name, description,flavor,raw,skill,"
+	      		     + "str, def, spd, time, revive, uses, aoe)"
+	      		     + "VALUES (0, 'Test Skill', 'For testing only', "
+	      		     + "' used shop da whop on ', -500, 0, 1.0, 1.0, 1.0, 0, 0, "
+	      		     + "1, 0)"
+	      		     + ";"
+	      		     + ""
+	      		     + "INSERT INTO Bestiary (monid, name, description,hp,str,def,spd,"
+	      		     + "skill1, skill1chance, skill2, skill2chance, skill3, skill3chance)"
+	      		     + "VALUES (0, 'Test Monster', 'For testing only', 300, 30, 5, 15,"
+	      		     + "0, .25, -1, 0, -1, 0)"
+	      		     + ";"
+	      		     + ""
+	      		     + "INSERT INTO Levels (levelid, name, height, width, multi)"
+	      		     + "VALUES (0, 'Test Level', 1, 3, 1)"
+	      		     + ";"
+	      		     + ""
+	      		     + "INSERT INTO Rooms (levelid, x, y, walls,exits,type,reward,"
+	      		     + "rewardnum, mon1, mon2, mon3, mon4)"
+	      		     + "VALUES (0, 0, 0, 1, -1, 0, 0, 3, 0, -1, -1, -1),"
+	      		     + "(0, 0, 1, 3, 0, 0, 0, 3, 0, -1, -1, -1),"
+	      		     + "(0, 0, 2, 2, 1, 0, 0, 3, 0, -1, -1, -1)"
+	      		     + ";"; 
+	      stmt.executeUpdate(sql);
+	      stmt.close();
+	      System.out.println("Data inserted successfully");
+	}
+	
+	static void testSetup() {
+		Connection conn = connectFF();
+		try {
+			makeTables(conn);
+			fillTestTables(conn);
+			conn.close();
+		}
+		catch(SQLException e) {
+			System.err.println("Something went wrong in the setup\n"
+					+ "Try to add/remove drop statemnts in makeTables\n" + e.getMessage());
+		}
 	}
 }

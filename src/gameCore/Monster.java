@@ -27,11 +27,11 @@ public class Monster extends Character{
     public Monster(String name, int maxHP, int str, int def, int spd) {
         super(name, maxHP, str, def, spd);
         this.fill = 0;
-        this.skill1 = null;
+        this.skill1 = new NullSkill();
         this.skill1chance = 0;
-        this.skill2 = null;
+        this.skill2 = new NullSkill();
         this.skill2chance = 0;
-        this.skill3 = null;
+        this.skill3 = new NullSkill();
         this.skill3chance = 0;
    }
     
@@ -41,9 +41,9 @@ public class Monster extends Character{
         this.fill = 0;
         this.skill1 = s;
         this.skill1chance = d;
-        this.skill2 = null;
+        this.skill2 = new NullSkill();
         this.skill2chance = 0;
-        this.skill3 = null;
+        this.skill3 = new NullSkill();
         this.skill3chance = 0;
  }
  
@@ -54,19 +54,20 @@ public class Monster extends Character{
     public void takeEffect(int raw, double skillcharge, double strChange, double defChange,
                            double spdChange, int time, boolean rev) {
         raw = raw * -1;
-        if(!isDead()) {
+        if(!isDead() && !rev) {
             //healing
             if(raw < 0) {
                 if(fill == 0) {
                     System.out.println(this + " is already on an empty stomach");
                 }
                 else if(fill < Math.abs(raw)) {
-                    System.out.printf("%s was healed by %d\n", this, fill);
+                	int healed = fill;
                     fill = 0;
+                    System.out.printf("%s was healed by %d\n", this, healed);
                 }
                 else {
-                    System.out.printf("%s was healed by %d\n", this, Math.abs(raw));
                     fill = fill - raw;
+                    System.out.printf("%s was healed by %d\n", this, Math.abs(raw));
                 }
             }
             //damage
@@ -83,6 +84,7 @@ public class Monster extends Character{
                 
                 if(fill >= this.getMax()) { //killed
                     System.out.printf("%s is full and has collapsed in battle\n", this);
+                    fill = getMax();
                     killed();
                 }
             }
@@ -90,16 +92,20 @@ public class Monster extends Character{
             super.updateBuff(strChange, defChange, spdChange, time);
             //monsters can't charge skills currently
         }
+        //not dead, can't revive
+        else if(!isDead() && rev) {
+            System.out.println(this + " isn't dead and can not be revived");
+        }
         //reviving
         else if(isDead() && rev) {
             raw = -1 * Math.abs(raw);
             if(fill < Math.abs(raw)) {
-                System.out.printf("%s was healed by %i\n", this, fill);
                 fill = 0;
+            	System.out.printf("%s was healed by %i\n", this, getMax());
             }
             else {
-                System.out.printf("%s was healed by %i\n", this, Math.abs(raw));
                 fill = fill - raw;
+                System.out.printf("%s was healed by %i\n", this, Math.abs(raw));
             }
             revived();
         }
@@ -126,24 +132,30 @@ public class Monster extends Character{
         Character[] targets = validTargets(enemies);
         int targetNum = random.nextInt(targets.length);
         
-        double skillCheck = random.nextDouble();
         Skill useSkill = skillChoice(random);
         
-        if(useSkill != null){
-        	return useSkill.makeAction(user, targets);
+        if(useSkill.canUse()) {
+        	if(useSkill.isAttack()) {
+        		if(useSkill.isAOE()) {
+        			return useSkill.makeAction(user, targets);
+        		}
+        		return useSkill.makeAction(user, targets[targetNum]);
+        	}
+        	else {
+        		return useSkill.makeAction(user, user);
+        	}
         }
         else{
-        	Action a = new Action(user, this + " punched " + enemies[targetNum].toString(),
-	        		-1 * super.getStr(), false, enemies[targetNum]);
-	        return a;
+        	return new Action(user, toString() + " attacked " +
+            enemies[targetNum].toString(), -1 * super.getStr(), false, targets[targetNum]);
         }
     }
     
-    public Character[] validTargets(Character[] heroes){
+    private Character[] validTargets(Character[] heroes){
     	try{
     		int liveHeroes = 0;
 	    	List<Character> ara = new ArrayList<Character>();
-	    	for(int i = 0; i < heroes.length; i++){
+	    	for(int i = 0; i < heroes.length; i++) {
 	    		if(!heroes[i].isDead()){
 	    			ara.add(heroes[i]);
 	    			liveHeroes++;
@@ -160,16 +172,27 @@ public class Monster extends Character{
 		return heroes;
     }
     
-    public Skill skillChoice(Random r){
-    	int rand = r.nextInt(2);
+    private Skill skillChoice(Random r){
     	double chance = r.nextDouble();
     	
-    	if(rand == 0 && skill1chance >= (1 - chance))
+    	if(fill / (super.getMax() * 1.0) < .75) {
+    		if (skill1.canUse() && !skill1.isAttack()) {
     			return skill1;
-    	else if(rand == 1 && skill2chance >= (1 - chance))
+    		}
+    		else if(skill2.canUse() && !skill2.isAttack()) {
     			return skill2;
-    	else if(skill3chance >= (1 - chance))
+    		}
+    		else if(skill3.canUse() && !skill3.isAttack()) {
     			return skill3;
-    	return null;
+   			}
+    	}
+    	
+    	if(skill1.canUse() && skill1chance >= (1 - chance))
+    			return skill1;
+    	else if(skill2.canUse() && skill2chance >= (1 - chance))
+    			return skill2;
+    	else if(skill3.canUse() && skill3chance >= (1 - chance))
+    			return skill3;
+    	return new NullSkill();
     }
 }

@@ -4,7 +4,9 @@ import java.util.Scanner;
 
 public class Cursor {
 	private int x;
+	private int lastx;
 	private int y;
+	private int lasty;
 	private Map map;
 	private Party party;
 	
@@ -20,38 +22,88 @@ public class Cursor {
 		
 	}
 	
-	private boolean enter() {
-		return map.getRoom(x, y).triggerEvent(party);
+	private boolean enter() throws GameOverException {
+		return grabRoom().triggerEvent(party);
+	}
+	
+	private Room grabRoom() {
+		try {
+			return map.getRoom(x, y);
+		}
+		catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("You have ventured outside the map, warping to start");
+			int[] i = map.start();
+			x = i[0];
+			lastx = x;
+			y = i[1];
+			lasty = y;
+		}
+		return map.getRoom(x, y);
 	}
 	
 	private void move(int d) {
 		if(map.getRoom(x, y).canMove(d)) {
 			if(d == 0) {
+				lasty = y;
 				y++;
 			}
 			else if(d == 1) {
+				lasty = y;
 				y--;
 			}
 			else if(d == 2) {
+				lastx = x;
 				x--;
 			}
 			else {
+				lastx = x;
 				x++;
 			}
-			System.out.println("You have entered another room.");
+			System.out.println("You have moved to another room.");
 		}
 	}
 
-	public void playMap() {
+	public void playMap() throws GameOverException {
 		Scanner kb = new Scanner(System.in);
 		boolean done = false;
 		String comm;
 		while(!done) {
 			System.out.print(":");
 			comm = kb.nextLine();
-			comm = comm.concat("                      ");
+			comm = comm.concat("                                    ");
 			if(comm.substring(0, 4).equalsIgnoreCase("use ")) {
-				System.out.println("Unimplmented command");
+				int i = comm.indexOf("on");
+				try {
+					if(i == -1) {
+						throw new Exception();
+					}
+					String temp = comm.substring(i + 3, i + 4);
+					int useon = Integer.parseInt(temp) - 1;
+					
+					if(useon < 0 || useon > 3) {
+						throw new Exception();
+					}
+					int item = SQL.getItemIndex(comm.substring(4, i).trim());
+					
+					if(item != -1) {
+						int[] items = party.getInvintory().getItems();
+						if(items[item] > 0) {
+							Character[] c = party.toArray();
+							Action a = Factory.itemFactory(item, new EmptyUser(), c[useon]);
+							a.takeAction();
+						}
+						else {
+							System.out.println("You don't have any of those...");
+						}
+					}
+					else {
+						System.out.println("Item was not found...");
+					}
+				}
+				catch(Exception e) {
+					System.out.println("useage: use <item> on <1,2,3,4> "
+							+ "(e.g. use potion on 1)");
+				}
 			}
 			else if(comm.substring(0, 5).equalsIgnoreCase("move ")) {
 				if(comm.substring(5, 7).equalsIgnoreCase("up")) {
@@ -70,7 +122,6 @@ public class Cursor {
 					System.out.println("move command can only "
 							+ "be used with up, down, left and right!");
 				}
-				
 			}
 			else if(comm.trim().equalsIgnoreCase("enter")) {
 				if(enter()) {
@@ -81,30 +132,52 @@ public class Cursor {
 					}
 				}
 			}
+			else if(comm.trim().equalsIgnoreCase("status")) {
+				System.out.println(party);
+			}
+			else if(comm.trim().equalsIgnoreCase("back")) {
+				System.out.println("You have warped back to the previous room");
+				x = lastx;
+				y = lasty;
+			}
+			else if(comm.trim().equalsIgnoreCase("bag")) {
+				System.out.println(party.getInvintory());
+			}
 			else if(comm.substring(0, 6).equalsIgnoreCase("equip ")) {
 				System.out.println("Unimplmented command");
 			}
-			else if(comm.substring(0, 8).equalsIgnoreCase("descibe ")) {
-				System.out.println("Unimplmented command");
+			else if(comm.substring(0, 9).equalsIgnoreCase("describe ")) {
+				if(comm.substring(9, 13).equalsIgnoreCase("room")) {
+					System.out.println(grabRoom().getDescript());
+				}
+				else {
+					String item = comm.substring(8).trim();
+					System.out.println(SQL.getItemDescr(item));
+				}
 			}
 			else if(comm.trim().equalsIgnoreCase("locate")) {
-				System.out.println("Currently at: " + x + ", "+ y);
+				System.out.println("Floor: " + map +"\nCurrently at: " + x + ", "+ y);
 			}
 			else if(comm.trim().equalsIgnoreCase("help")) {
-				System.out.println("'move direction': move a direction (ie up)\n"
-						+ "'use item on partyslot': use item on a party member (ie potion"
-						+ "on 1 \n'enter': explore current room\n"
-						+ "'equip item on partyslot': equip a piece of "
+				System.out.println("'move <direction>': move a direction (ie up)\n"
+						+ "'use <item> on <1,2,3,4>': use item on a party member (ie potion"
+						+ " on 1 \n'enter': explore current room\n"
+						+ "'equip <item> on <1,2,3,4>': equip a piece of "
 						+ "equipment on a party member\n"
-						+ "'describe item/room': gives a description of what you enter\n"
-						+ "'locate': gives current coordinates"
+						+ "'describe <object>': gives a description of room or item\n"
+						+ "'status': gives party status\n"
+						+ "'bag': shows inventory contents\n"
+						+ "'back': retun to previous room\n'"
+						+ "'locate': gives current coordinates\n"
 						+ "'help': display this menu");
 			}
 			else {
-				System.out.println("invalid command, type 'help' to get a list of commands");
+				System.out.println("invalid command, type 'help' to get a list of "
+						+ "commands");
 			}
 		}
-        System.out.println("You Cleared the Dungeon! (Dun dun dun dun dun dun, dun, dun dun!)");
+        System.out.println("You Cleared the Dungeon! (Dun dun dun dun dun "
+        		+ "dun, dun, dun dun!)");
 		kb.close();
 	}
 }

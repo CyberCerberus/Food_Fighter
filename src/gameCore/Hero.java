@@ -5,7 +5,7 @@ public class Hero extends Character{
     private String className;
     private int hp;
     private Party party;
-    private Skill skill1, skill2, skill3; //may become an array later, can't be null
+    private Skill skill1, skill2, skill3; //can't be null
    
    public Hero(String name, String className, int maxHP, int str, int def, int spd,
                Party p, Skill s1, Skill s2, Skill s3){
@@ -23,19 +23,20 @@ public class Hero extends Character{
     
     public void takeEffect(int raw, double skillchagre, double strChange, double defChange,
                            double spdChange, int time, boolean rev) {
-        if(!isDead()) {
+        if(!isDead() && !rev) {
             //healing
             if(raw > 0) {
                 if(hp == super.getMax()) {
                     System.out.println(this + " is already at full hp");
                 }
                 else if(super.getMax() - hp < raw) {
-                    System.out.printf("%s was healed by %d\n", this, super.getMax() - hp);
+                	int healed = super.getMax() - hp;
                     hp = super.getMax();
+                    System.out.printf("%s was healed by %d\n", this, healed);
                 }
                 else {
-                    System.out.printf("%s was healed by %d\n", this, raw);
                     hp = hp + raw;
+                    System.out.printf("%s was healed by %d\n", this, raw);
                 }
             }
             //damage
@@ -52,6 +53,7 @@ public class Hero extends Character{
                 
                 if(hp <= 0) { //killed
                     System.out.printf("%s was defeated in battle\n", this);
+                    hp = 0;
                     killed();
                 }
             }
@@ -61,23 +63,27 @@ public class Hero extends Character{
             skill2.restore(skillchagre);
             skill3.restore(skillchagre);
         }
+        //not dead, can't revive
+        else if(!isDead() && rev) {
+            System.out.println(this + " isn't dead and can not be revived");
+        }
         //reviving
         else if(isDead() && rev) {
         	raw = Math.abs(raw);
+            revived();
             if(super.getMax() - hp < raw) {
-                System.out.printf("%s was revived and healed by %d\n", 
-                		this, super.getMax() - hp);
                 hp = super.getMax();
+                System.out.printf("%s was revived and healed by %d\n", 
+                		this, super.getMax());
             }
             else {
-                System.out.printf("%s was revived and healed by %d\n", this, raw);
                 hp = hp + raw;
+                System.out.printf("%s was revived and healed by %d\n", this, raw);
             }
-            revived();
         }
         //already dead
         else {
-            System.out.println(this + " is already dead");
+            System.out.println(this + " is dead");
         }
     }
     
@@ -114,8 +120,6 @@ public class Hero extends Character{
              }
              kb.nextLine();
              
-            
-            //choice = 1;
             if(choice == 1) {
                 Character[] target = chooseTarget(enemies, kb);
                 Character user = this;
@@ -176,40 +180,71 @@ public class Hero extends Character{
         //should allow for players to go back and choose another option
         //unless skill has been picked
     	int choice = 0;
-    	   	
     	while(true){
     		System.out.println("Choose one of the following skills:");
-        	System.out.println(	"1: " + skill1 + "\n" +
-        						"2: " + skill2 + "\n" +
-        						"3: " + skill3);
+        	System.out.println(	"1. " + skill1.display() + "\n" +
+        						"2. " + skill2.display() + "\n" +
+        						"3. " + skill3.display() + "\n" +
+        						"4. Back");
     		try{
         		choice = kb.nextInt();
-        		if(choice < 1 || choice > 3){
+        		if(choice < 1 || choice > 4){
         			System.out.println("Invalid option!");
         		}
         		else{
+        			Character [] targets = null;
         			switch(choice){
-        				case 1:
-        					return skill1.makeAction(this, enemies);
+        				case 1: 
+        					if(skill1.canUse()) {
+        						targets = chooseSkillTarget(skill1, enemies, kb);
+        						return skill1.makeAction(this, targets);
+        					}
+        					else {
+        						System.out.println(skill1 + " move is out of pp");
+        					}
+        					break;
         				case 2:
-        					return skill2.makeAction(this, enemies);
+        					if(skill2.canUse()) {
+        						targets = chooseSkillTarget(skill2, enemies, kb);
+        						return skill2.makeAction(this, targets);
+        					}
+        					else {
+        						System.out.println(skill2 + " move is out of pp");
+        					}
+        					break;
         				case 3:
-        					return skill3.makeAction(this, enemies);
-        					
+        					if(skill3.canUse()) {
+        						targets = chooseSkillTarget(skill3, enemies, kb);
+        						return skill3.makeAction(this, targets);
+        					}
+        					else {
+        						System.out.println(skill3 + " move is out of pp");
+        					}
+        					break;
+        				case 4:
+        					return null;
         			}
         		}
-        		
-        		
         	}
         	catch(InputMismatchException e){
         		System.out.println("Invalid number!");
-        	}
-    		
-    	}
-    	
-    	
-        
-        
+        	}	
+    	}   
+    }
+    
+    private Character [] chooseSkillTarget(Skill s, Character[] enemies, Scanner kb) {
+    	if(s.isAttack()) {
+    		if(s.isAOE()) {
+    			return enemies;
+    		}
+			return chooseTarget(enemies, kb);
+		}
+		else {
+			if(s.isAOE()) {
+				return party.toArray();
+			}
+			return chooseTarget(party.toArray(), kb);
+		}
     }
     
     private Action chooseItem(Character[] enemies, Scanner kb) {
@@ -221,43 +256,50 @@ public class Hero extends Character{
     	int choice = 0;
     	while(true){
     		System.out.println("Select an item from the following list: ");
-    		for(int i = 1; i <= items.length; i++){
-    			System.out.println(i + ". " + "health pot.");
-    			//Based on the index this will print out the item
-    		}
-    		try{
+    		System.out.println(party.getInvintory());
+			System.out.println((items.length + 1) + ". Back");
+			
+    		try {
     			choice = kb.nextInt();
-    			if(choice < 1 || choice > items.length){
-    				System.out.println("Invalid choice.");
-    			}
-    			//based on the choice, an action will be created
+    			if(choice < 1 || choice > items.length) {
+    				return null;
+    			} //based on the choice, an action will be created
     			else if(items[choice - 1] > 0){
     				Character user = this;
-    				Character[] c = {user};
-        			Action a = new Action(user, user + "uses a health pot", 1, false, c);
-        			party.getInvintory().decrementItem(choice - 1);
-        			return a;
+    				Character[] target = null;
+    				if(choice > 10) {
+    					target = chooseTarget(enemies, kb);
+    				}
+    				else {
+    					target = chooseTarget(party.toArray(), kb);
+    				}
+    				items[choice - 1]--;
+    				return Factory.itemFactory(choice -1, user, target);
     			}
     			else{
     				System.out.println("No more of that item!");
-    				//will just return null for now to exit the loop
     				return null;
     			}
-    			
-    			
-    		}catch(NumberFormatException e){
+    		}
+    		catch(InputMismatchException e){
     			System.out.println("Invalid number.");
     		}
-    		
     	}
-        
     }
     
     public String toString() {
         if(super.isDead()) {
-            return "(dead)" + getName() + " the " + className;
+            return getName() + " the " + className + " (dead)";
         }
-        return getName() + " the " + className;
+        return getName() + " the " + className + " " + hp + "/" + super.getMax();
+    }
+    
+    public String getStatus() {
+    	String ret = toString() + "\n   ";
+    	ret += skill1.display() + "\n   ";
+    	ret += skill2.display() + "\n   ";
+    	ret += skill3.display();
+    	return ret;
     }
 }
 
