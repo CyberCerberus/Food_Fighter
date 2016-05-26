@@ -67,6 +67,7 @@ public class Cursor {
 		Scanner kb = new Scanner(System.in);
 		boolean done = false;
 		String comm;
+		System.out.println("\n\nYour party entered:\n" + map);
 		while(!done) {
 			System.out.print(":");
 			comm = kb.nextLine();
@@ -88,9 +89,15 @@ public class Cursor {
 					if(item != -1) {
 						int[] items = party.getInvintory().getItems();
 						if(items[item] > 0) {
-							Character[] c = party.toArray();
-							Action a = Factory.itemFactory(item, new EmptyUser(), c[useon]);
-							a.takeAction();
+							if(item >= party.getInvintory().FIRSTATTACKINDEX) {
+								System.out.println("Can not use that outside of battle");
+							}
+							else {
+								Character[] c = party.toArray();
+								Action a = Factory.itemFactory(item,
+										new EmptyUser(), c[useon]);
+								a.takeAction();
+							}
 						}
 						else {
 							System.out.println("You don't have any of those...");
@@ -135,6 +142,23 @@ public class Cursor {
 			else if(comm.trim().equalsIgnoreCase("status")) {
 				System.out.println(party);
 			}
+			else if(comm.substring(0, 6).equalsIgnoreCase("stats ")) {
+				try{
+					String temp = comm.substring(6).trim();
+					int select = Integer.parseInt(temp) - 1;
+					
+					if(select < 0 || select > 3) {
+						throw new Exception();
+					}
+					Character[] cara = party.toArray();
+					Character c = cara[select];
+					System.out.println(c + "\nStr: " + c.getStr() + "\nDef: "
+					+ c.getDef() + "\nSpd: " + c.getSpd());
+				}
+				catch (Exception e) {
+					System.out.println("Usage: stats <1,2,3,4>");
+				}
+			}
 			else if(comm.trim().equalsIgnoreCase("back")) {
 				System.out.println("You have warped back to the previous room");
 				x = lastx;
@@ -144,7 +168,81 @@ public class Cursor {
 				System.out.println(party.getInvintory());
 			}
 			else if(comm.substring(0, 6).equalsIgnoreCase("equip ")) {
-				System.out.println("Unimplmented command");
+				int i = comm.indexOf("on");
+				try {
+					if(i == -1) {
+						throw new Exception();
+					}
+					String temp = comm.substring(i + 3, i + 4);
+					int useon = Integer.parseInt(temp) - 1;
+					
+					if(useon < 0 || useon > 3) {
+						throw new Exception();
+					}
+					Equipment equip = Factory.equipFactory(comm.substring(6, i).trim());
+					int index = equip.getIndex() - party.getInvintory().FIRSTEQUIPINDEX;
+					if(index >= 0) {
+						int[] equips = party.getInvintory().getEquips();
+						if(equips[index] > 0) {
+							Character[] cara = party.toArray();
+							Hero h = (Hero) cara[useon];
+							int res = h.equip(equip);
+							if(res != -1) {
+								equips[index]--;
+								party.getInvintory().returnItem(res);
+							}
+							else if(res == -1) {
+								equips[index]--;
+							}
+						}
+						else {
+							System.out.println("You don't have any of those...");
+						}
+					}
+					else {
+						System.out.println("Item was not found...");
+					}
+				}
+				catch(Exception e) {
+					System.out.println("useage: equip <equipment> on <1,2,3,4> "
+							+ "(e.g. equip knife on 1)");
+				}
+			}
+			else if(comm.substring(0, 8).equalsIgnoreCase("unequip ")) {
+				int i = comm.indexOf("on");
+				try{
+					if(i == -1) {
+						throw new Exception();
+					}
+					String temp = comm.substring(i + 3, i + 4);
+					int select = Integer.parseInt(temp) - 1;
+					
+					if(select < 0 || select > 3) {
+						throw new Exception();
+					}
+					temp = comm.substring(8, i).trim();
+					
+					Character[] cara = party.toArray();
+					Hero h = (Hero) cara[select];
+					
+					if(temp.equalsIgnoreCase("hands")) {
+						party.getInvintory().returnItem(h.unequip(0));
+					}
+					else if(temp.equalsIgnoreCase("body")) {
+						party.getInvintory().returnItem(h.unequip(1));
+					}
+					else if(temp.equalsIgnoreCase("head")) {
+						party.getInvintory().returnItem(h.unequip(2));
+					}
+					else {
+						System.out.println("Usage: unequip <equipment slot> on <1,2,3,4> "
+								+ "- equipment slot = hands, body, head");
+					}
+				}
+				catch (Exception e) {
+					System.out.println("Usage: unequip <equipment slot> on <1,2,3,4> "
+							+ "- equipment slot = hands, body, head");
+				}
 			}
 			else if(comm.substring(0, 9).equalsIgnoreCase("describe ")) {
 				if(comm.substring(9, 13).equalsIgnoreCase("room")) {
@@ -164,12 +262,23 @@ public class Cursor {
 						+ " on 1 \n'enter': explore current room\n"
 						+ "'equip <item> on <1,2,3,4>': equip a piece of "
 						+ "equipment on a party member\n"
+						+ "'unequip <equipment slot> on <1,2,3,4>': removes equipment from "
+						+ "hero, equipment slot = hands, body, hat\n"
 						+ "'describe <object>': gives a description of room or item\n"
 						+ "'status': gives party status\n"
+						+ "'stats <1,2,3,4>': gives hero's stats\n"
 						+ "'bag': shows inventory contents\n"
-						+ "'back': retun to previous room\n'"
+						+ "'back': retun to previous room\n"
 						+ "'locate': gives current coordinates\n"
+						+ "'quit': exit the game, you will not be able to save\n"
 						+ "'help': display this menu");
+			}
+			else if(comm.trim().equalsIgnoreCase("quit")) {
+				System.out.println("Are you sure? You can not save inside a dungeon\ny/n");
+					if(kb.nextLine().trim().equalsIgnoreCase("y")){
+						kb.close();
+						System.exit(0);
+					}
 			}
 			else {
 				System.out.println("invalid command, type 'help' to get a list of "
@@ -178,6 +287,5 @@ public class Cursor {
 		}
         System.out.println("You Cleared the Dungeon! (Dun dun dun dun dun "
         		+ "dun, dun, dun dun!)");
-		kb.close();
 	}
 }

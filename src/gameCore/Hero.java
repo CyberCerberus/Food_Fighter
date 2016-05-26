@@ -3,12 +3,14 @@ import java.util.*;
 
 public class Hero extends Character{
     private String className;
-    private int hp;
+    private int hp, equipclass, curexp, nextLVUP;
     private Party party;
     private Skill skill1, skill2, skill3; //can't be null
+    private Equipment[] equips;
+    private LevelUpBuild build;
    
    public Hero(String name, String className, int maxHP, int str, int def, int spd,
-               Party p, Skill s1, Skill s2, Skill s3){
+               Party p, Skill s1, Skill s2, Skill s3, int ec, LevelUpBuild b){
        super(name, maxHP, str, def, spd);
        this.hp = maxHP;
        this.className = className;
@@ -16,6 +18,14 @@ public class Hero extends Character{
        this.skill1 = s1;
        this.skill2 = s2;
        this.skill3 = s3;
+       this.equipclass = ec;
+       this.equips = new Equipment[3];
+       this.equips[0] = new BareHands();
+       this.equips[1] = new Cloths();
+       this.equips[2] = new Hat();
+       this.curexp = 0;
+       this.nextLVUP = 10;
+       this.build = b;
    }
     public int getHP() {
         return hp;
@@ -44,7 +54,8 @@ public class Hero extends Character{
                 if(this.getDef() < Math.abs(raw)) {
                     int dmg = raw + this.getDef();
                     hp = hp + dmg;
-                    System.out.printf("%s took %d point(s) of damage\n", this, Math.abs(dmg));
+                    System.out.printf("%s took %d point(s) of damage\n", 
+                    		this, Math.abs(dmg));
                 }
                 else {
                     hp--;
@@ -57,11 +68,6 @@ public class Hero extends Character{
                     killed();
                 }
             }
-            
-            updateBuff(strChange, defChange, spdChange, time);
-            skill1.restore(skillchagre);
-            skill2.restore(skillchagre);
-            skill3.restore(skillchagre);
         }
         //not dead, can't revive
         else if(!isDead() && rev) {
@@ -85,6 +91,13 @@ public class Hero extends Character{
         else {
             System.out.println(this + " is dead");
         }
+        
+        if(!isDead()) {
+        	updateBuff(strChange, defChange, spdChange, time);
+            skill1.restore(skillchagre);
+            skill2.restore(skillchagre);
+            skill3.restore(skillchagre);
+        }
     }
     
     //basic concept for attack
@@ -96,11 +109,6 @@ public class Hero extends Character{
         Scanner kb = new Scanner(System.in); //do not close!
         
         Action a = chooseAction(enemies, kb);
-       /*
-        Character user = this;
-        Action a = new Action(user, toString() + " punched " + enemies[0].toString(),
-        		-1 * super.getStr(), false, enemies);
-        */
         return a;
     }
     
@@ -256,25 +264,26 @@ public class Hero extends Character{
     	int choice = 0;
     	while(true){
     		System.out.println("Select an item from the following list: ");
-    		System.out.println(party.getInvintory());
+    		System.out.println(party.getInvintory().itemsToString());
 			System.out.println((items.length + 1) + ". Back");
 			
     		try {
     			choice = kb.nextInt();
-    			if(choice < 1 || choice > items.length) {
+    			choice--;
+    			if(choice < 0 || choice >= items.length) {
     				return null;
     			} //based on the choice, an action will be created
-    			else if(items[choice - 1] > 0){
+    			else if(items[choice] > 0){
     				Character user = this;
     				Character[] target = null;
-    				if(choice > 10) {
+    				if(choice >= party.getInvintory().FIRSTATTACKINDEX) {
     					target = chooseTarget(enemies, kb);
     				}
     				else {
     					target = chooseTarget(party.toArray(), kb);
     				}
-    				items[choice - 1]--;
-    				return Factory.itemFactory(choice -1, user, target);
+    				items[choice]--;
+    				return Factory.itemFactory(choice, user, target);
     			}
     			else{
     				System.out.println("No more of that item!");
@@ -294,6 +303,49 @@ public class Hero extends Character{
         return getName() + " the " + className + " " + hp + "/" + super.getMax();
     }
     
+    public int equip(Equipment equip) {
+    	System.out.print(getName());
+    	int ret = -2;
+    	
+    	if(equip.canUse(equipclass)) {
+    		int slot = equip.getType();
+    		ret = equips[slot].getIndex();
+    		System.out.println(" equiped " + equip);
+    		equips[slot] = equip;
+    	}
+    	else {
+    		System.out.println(" does not meet the requierments to use this");
+    	}
+    	return ret;
+    }
+    
+    public int unequip(int slot) {
+    	int ret = -1;
+    	if(slot < 0 || slot >= equips.length) {
+    		System.out.println("Invalid equipment slot");
+    	}
+    	
+    	ret = equips[slot].getIndex();
+    	if(ret == -1) {
+    		System.out.println("Nothing is equiped");
+   			return -1;
+    	}
+    	       	
+       	Equipment temp = null;
+       	if(slot == 0) {
+       		temp = new BareHands();
+       	}
+       	else if(slot == 1) {
+       		temp = new Cloths();
+       	}
+       	else {
+       		temp = new Hat();
+       	}
+       	equips[slot] = temp;
+    	
+       	return ret;
+    }
+    
     public String getStatus() {
     	String ret = toString() + "\n   ";
     	ret += skill1.display() + "\n   ";
@@ -301,6 +353,125 @@ public class Hero extends Character{
     	ret += skill3.display();
     	return ret;
     }
+	public void rewardExp(int exp) {
+		if(!isDead()) {
+			curexp += exp;
+			checkLvl();
+		}
+	}
+	private void checkLvl() {
+		if(curexp > nextLVUP) {
+			System.out.println(this + " leveled up!");
+			upStats(build);
+			nextLVUP *= 2;
+			checkLvl();
+		}
+	}
+	
+	@Override
+	public int getStr() {
+		int temp = super.getStr();
+		for(Equipment e: equips) {
+			temp += e.getStr();
+		}
+		return temp;
+	}
+	
+	@Override
+	public int getDef() {
+		int temp = super.getDef();
+		for(Equipment e: equips) {
+			temp += e.getDef();
+		}
+		return temp;
+	}
+	
+	@Override
+	public int getSpd() {
+		int temp = super.getSpd();
+		for(Equipment e: equips) {
+			temp += e.getSpd();
+		}
+		return temp;
+	}
+	
+	String [] export() {
+		super.clearBuffs();
+		String[] ret = new String[7];
+		ret[0] = getName();
+		ret[1] = className;
+		ret[2] = "("+super.getMax()+","+super.getStr()+","+super.getDef()
+				+","+super.getSpd()+")";
+		ret[3] = "("+skill1.getID()+","+skill2.getID()+","+skill3.getID()+")";
+		ret[4] = "("+equips[0].getIndex()+","+equips[1].getIndex()+","
+					+equips[2].getIndex()+")";
+		ret[5] = "("+equipclass+")("+build.getStr()+","+build.getDef()
+				+","+build.gedSpd()+")";
+		ret[6] = "("+curexp+","+nextLVUP+")";
+		return ret;
+	}
+	
+	static Hero retriveHero(Party p, String[] ara) {
+		String temp = ara[2];
+		int i = temp.indexOf(',');
+		int max = Integer.parseInt(temp.substring(1, i));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(',');
+		int str = Integer.parseInt(temp.substring(0, i));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(',');
+		int def = Integer.parseInt(temp.substring(0, i));;
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(')');
+		int spd = Integer.parseInt(temp.substring(0, i));;
+		return new Hero(ara[0], ara[1], max, str, def, spd, p, ara);
+	}
+	
+	private Hero(String name, String className, int maxHP, int str, int def, int spd,
+            Party p, String [] ara) {
+		super(name, maxHP, str, def, spd);
+		this.party = p;
+		hp = maxHP;
+		this.className = className;
+		String temp = ara[3];
+		int i = temp.indexOf(',');
+		skill1 = Factory.skillFactory(Integer.parseInt(temp.substring(1, i)));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(',');
+		skill2 = Factory.skillFactory(Integer.parseInt(temp.substring(0, i)));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(')');
+		skill3 = Factory.skillFactory(Integer.parseInt(temp.substring(0, i)));
+		equips = new Equipment[3];
+		temp = ara[4];
+		i = temp.indexOf(',');
+		equips[0] = Factory.equipFactory(Integer.parseInt(temp.substring(1, i)));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(',');
+		equips[1] = Factory.equipFactory(Integer.parseInt(temp.substring(0, i)));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(')');
+		equips[2] = Factory.equipFactory(Integer.parseInt(temp.substring(0, i)));
+		temp = ara[5];
+		i = temp.indexOf(')');
+		equipclass = Integer.parseInt(temp.substring(1, i));
+		temp = temp.substring(i + 2);
+		i = temp.indexOf(',');
+		int bstr = Integer.parseInt(temp.substring(0, i));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(',');
+		int bdef = Integer.parseInt(temp.substring(0, i));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(')');
+		int bspd = Integer.parseInt(temp.substring(0, i));
+		build = new LevelUpBuild(bstr, bdef, bspd);
+		temp = ara[6];
+		i = temp.indexOf(',');
+		curexp = Integer.parseInt(temp.substring(1, i));
+		temp = temp.substring(i + 1);
+		i = temp.indexOf(')');
+		nextLVUP = Integer.parseInt(temp.substring(0, i));
+	}
 }
 
 

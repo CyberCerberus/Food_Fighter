@@ -30,4 +30,10 @@ public class Buff {
         }
     }
     
+    public void clear() {
+    	cur = 0;
+    	amount = 1.0;
+    	start = 0;
+    }
+    
 }

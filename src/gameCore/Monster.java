@@ -5,15 +5,16 @@ import java.util.List;
 import java.util.Random;
 public class Monster extends Character{
     
-    private int fill;
+    private int fill, exp;
     private double skill1chance, skill2chance, skill3chance;
     private Skill skill1, skill2, skill3;
     //skills can be null
     
     //any skill monster (0-3)
-    public Monster(String name, int maxHP, int str, int def, int spd,
+    public Monster(String name,int exp, int maxHP, int str, int def, int spd,
                    Skill s1, double sc1, Skill s2, double sc2, Skill s3, double sc3) {
         super(name, maxHP, str, def, spd);
+        this.exp = exp;
         this.fill = 0;
         this.skill1 = s1;
         this.skill1chance = sc1;
@@ -113,6 +114,10 @@ public class Monster extends Character{
         else {
             System.out.println(this + " is already full");
         }
+    }
+    
+    public int rewardExp() {
+    	return exp;
     }
     
     public Action attack(Character[] enemies) {
