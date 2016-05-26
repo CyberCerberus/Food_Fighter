@@ -29,6 +29,7 @@ public class BasicRoom extends Room {
 		super();
 		item = i;
 		itemnum = in;
+		this.multi = multi;
 		mon1 = m;
 		this.end = end;
 		super.setWalls(walls);

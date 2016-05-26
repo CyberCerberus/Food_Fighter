@@ -57,6 +57,12 @@ public abstract class Character{
         spdBuff.passTime();
     }
     
+    public void clearBuffs() {
+    	strBuff.clear();
+    	defBuff.clear();
+    	spdBuff.clear();
+    }
+    
     public abstract int getHP();
     
     public abstract Action attack(Character[] enemies);
@@ -66,5 +72,17 @@ public abstract class Character{
             return name + " (dead)";
         }
         return name;
+    }
+    
+    void upStats(LevelUpBuild b) {
+    	System.out.print(str + " + " + b.getStr() + " = ");
+    	str += b.getStr();
+    	System.out.println(str);
+    	System.out.print(def + " + " + b.getDef() + " = ");
+    	def += b.getDef();
+    	System.out.println(def);
+    	System.out.print(spd + " + " + b.gedSpd() + " = ");
+    	spd += b.gedSpd();
+    	System.out.println(spd);
     }
 }

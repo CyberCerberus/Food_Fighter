@@ -6,6 +6,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Factory {
+	private static final int LIGHT = 1;
+	private static final int MEDIUM = 2;
+	private static final int HEAVY = 3;
+	//if you add a build i have the stats add to 12
+	private static final LevelUpBuild BALBUILD = new LevelUpBuild(4,4,4);
+	private static final LevelUpBuild STRBUILD = new LevelUpBuild(6,3,3);
+	private static final LevelUpBuild DEFBUILD = new LevelUpBuild(3,7,2);
+	private static final LevelUpBuild SPDBUILD = new LevelUpBuild(3,3,6);
+	private static final LevelUpBuild STRSPDBUILD = new LevelUpBuild(5,2,5);
+	private static final LevelUpBuild STRDEFBUILD = new LevelUpBuild(5,5,2);
+
+
+	
 	public static Map mapFactory(int level) {
 		//SQL call to the levle table to get the relevant information
 		//then calls the room factory to fill the empty map
@@ -119,14 +132,15 @@ public class Factory {
 			selectMonster = conn.prepareStatement(sql);
 			selectMonster.setInt(1, monid);
 			monster = selectMonster.executeQuery();
-			Skill s1 = skillFactory(monster.getInt(8));
-			Skill s2 = skillFactory(monster.getInt(10));
-			Skill s3 = skillFactory(monster.getInt(12));
+			Skill s1 = skillFactory(monster.getInt(9));
+			Skill s2 = skillFactory(monster.getInt(11));
+			Skill s3 = skillFactory(monster.getInt(13));
 			
-			m = new Monster(monster.getString(2), monster.getInt(4),
-					monster.getInt(5), monster.getInt(6), monster.getInt(7), 
-					s1, monster.getDouble(9), s2, monster.getDouble(11), s3, 
-					monster.getDouble(13));
+			m = new Monster(monster.getString(2),monster.getInt(4), 
+					monster.getInt(5) * multi, monster.getInt(6)  * multi, 
+					monster.getInt(7)  * multi, monster.getInt(8)  * multi, 
+					s1, monster.getDouble(10), s2, monster.getDouble(12), 
+					s3, monster.getDouble(14));
 			conn.close();
 		}
 		catch(SQLException e) {
@@ -142,19 +156,15 @@ public class Factory {
 			
 		}
 		else {
-			Skill s1 = new Skill("Stab", "Stab one foe", " stabbed ",
-					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
-			Skill s2 = new Skill("Kick", "Kick one foe", " kicked ", 
-					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
-			Skill s3 = new Skill("Slap", "Slap one foe", " slapped ", 
-					-75, 0.0, 0.0, 0.0, 0.0, 0, false, 5, false);
-			
-			h = new Hero(name, "Cook", 150, 25, 25, 25, p, s1, s2, s3);
+			Skill s1 = skillFactory(1);
+			Skill s2 = skillFactory(2);
+			Skill s3 = skillFactory(3);
+			h = new Hero(name, "Cook", 150, 25, 25, 25, p, s1, s2, s3, MEDIUM, BALBUILD);
 		}
 		return h;
 	}
 	
-	private static Skill skillFactory(int skillid) {
+	static Skill skillFactory(int skillid) {
 		//SQL call to the skill table to get the relevant information
 		if(skillid == -1) {
 			return new NullSkill();
@@ -168,10 +178,11 @@ public class Factory {
 			selectSkill = conn.prepareStatement(sql);
 			selectSkill.setInt(1, skillid);
 			skill = selectSkill.executeQuery();
-			s = new Skill(skill.getString(2), skill.getString(3), skill.getString(4), 
-					skill.getInt(5), skill.getDouble(6), skill.getDouble(7),
-					skill.getDouble(8), skill.getDouble(9), skill.getInt(10),
-					skill.getBoolean(11), skill.getInt(12), skill.getBoolean(13));
+			s = new Skill(skill.getInt(1), skill.getString(2), skill.getString(3),
+					skill.getString(4), skill.getInt(5), skill.getDouble(6), 
+					skill.getDouble(7), skill.getDouble(8), skill.getDouble(9), 
+					skill.getInt(10), skill.getBoolean(11), skill.getInt(12), 
+					skill.getBoolean(13));
 			conn.close();
 		}
 		catch(SQLException e) {
@@ -179,6 +190,63 @@ public class Factory {
 		}
 		
 		return s;
+	}
+	
+	public static Equipment equipFactory(String equip) {
+		Connection conn = SQL.connectFF();
+		PreparedStatement selectItem;
+		ResultSet item;
+		Equipment e = new Hat();
+		String sql = "SELECT * FROM EquipList WHERE name LIKE ?";
+		try {
+			selectItem = conn.prepareStatement(sql);
+			selectItem.setString(1, equip);
+			item = selectItem.executeQuery();
+			if(item.next()) {
+				e = new Equipment(item.getString(2), item.getInt(1), item.getInt(4), 
+					item.getInt(5), item.getInt(6), item.getInt(7), item.getInt(8));
+			}
+			conn.close();
+		}
+		catch(SQLException excpet) {
+			System.err.println("Something went wrong in the database\n"
+					+ excpet.getMessage());
+		}
+		
+		return e;
+	}
+	
+	public static Equipment equipFactory(int equipid) {
+		if(equipid == -1) {
+			return new BareHands();
+		}
+		else if(equipid == -2) {
+			return new Cloths();
+		}
+		else if(equipid == -3) {
+			return new Hat();
+		}
+		Connection conn = SQL.connectFF();
+		PreparedStatement selectItem;
+		ResultSet item;
+		Equipment e = new Hat();
+		String sql = "SELECT * FROM EquipList WHERE itemid = ?";
+		try {
+			selectItem = conn.prepareStatement(sql);
+			selectItem.setInt(1, equipid);
+			item = selectItem.executeQuery();
+			if(item.next()) {
+				e = new Equipment(item.getString(2), item.getInt(1), item.getInt(4), 
+					item.getInt(5), item.getInt(6), item.getInt(7), item.getInt(8));
+			}
+			conn.close();
+		}
+		catch(SQLException excpet) {
+			System.err.println("Something went wrong in the database\n"
+					+ excpet.getMessage());
+		}
+		
+		return e;
 	}
 	
 }
