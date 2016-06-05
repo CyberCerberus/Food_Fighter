@@ -1,5 +1,7 @@
 package main;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import javax.sound.sampled.AudioFormat;
@@ -22,10 +24,9 @@ public class Sound {
 	if(clips.get(n) != null) return;
 	Clip clip;
 	try {			
-	    AudioInputStream ais =
-		    AudioSystem.getAudioInputStream(
-			    Sound.class.getResourceAsStream(s)
-			    );
+	    InputStream as = Sound.class.getResourceAsStream(s);
+	    InputStream bi = new BufferedInputStream(as);
+	    AudioInputStream ais = AudioSystem.getAudioInputStream(bi);
 	    AudioFormat baseFormat = ais.getFormat();
 	    AudioFormat decodeFormat = new AudioFormat(
 		    AudioFormat.Encoding.PCM_SIGNED,

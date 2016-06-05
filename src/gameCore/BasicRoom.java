@@ -234,7 +234,7 @@ public class BasicRoom extends Room {
 	    int tc = c;
 	    int tr = r;
 
-	    if(withing(r * 20, c * 20, 10) && !monster.isDead()){
+	    if(withing(r * 20, c * 20, 50) && !monster.isDead()){
 		monster.setInCombat(true);
 		inCombat = true;
 		monsterDiscovered = true;
