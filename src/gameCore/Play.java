@@ -137,9 +137,9 @@ public class Play {
 	}
 	
 	private static void makeHeros(Party p, Scanner kb) {
-		p.addHero(Factory.heroFactory("Johny", 0, p));
-		p.addHero(Factory.heroFactory("Garry", 0, p));
-		p.addHero(Factory.heroFactory("Bobby", 0, p));
-		p.addHero(Factory.heroFactory("Poppy", 0, p));
+		p.addHero(Factory.heroFactory("Elaomos", "Chef", 0, p));
+		p.addHero(Factory.heroFactory("Nebard", "Butcher", 0, p));
+		p.addHero(Factory.heroFactory("Asoevia", "Vegan", 0, p));
+		p.addHero(Factory.heroFactory("Jerethien", "Baker", 0, p));
 	}
 }

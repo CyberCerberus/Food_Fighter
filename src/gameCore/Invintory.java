@@ -30,6 +30,10 @@ public class Invintory {
 		}
 	}
 	
+	public String getItemName(int i){
+	    return itemnames[i];
+	}
+	
 	public void returnItem(int item) {
 		item -= FIRSTEQUIPINDEX;
 		if(item >= 0 && item < items.length) {
@@ -46,6 +50,11 @@ public class Invintory {
 		return equips;
 	}
 	
+	public String[] getItemNames(){
+	    return itemnames;
+	}
+	
+	@Override
 	public String toString() {
 		String ret = "";
 		for(int i = 0; i < items.length; i++) {

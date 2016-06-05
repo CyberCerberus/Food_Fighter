@@ -5,6 +5,7 @@ public class NullSkill extends Skill {
 		super(-1, "", "", "", 0, 0.0, 0.0, 0.0, 0.0, 0, false, 0, false);
 	}
 	
+	@Override
 	public String toString() {
 		return "";
 	}

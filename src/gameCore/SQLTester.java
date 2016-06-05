@@ -25,11 +25,11 @@ public class SQLTester {
 				System.out.println(s);
 		}
 		Party p = new Party();
-		Character h = Factory.heroFactory("Johny", 0, p);
+		Character h = Factory.heroFactory("Johny", "Butcher", 0, p);
 		p.addHero((Hero)h);
-		p.addHero(Factory.heroFactory("Garry", 0, p));
-		p.addHero(Factory.heroFactory("Bobby", 0, p));
-		p.addHero(Factory.heroFactory("Poppy", 0, p));
+		p.addHero(Factory.heroFactory("Garry", "Butcher", 0, p));
+		p.addHero(Factory.heroFactory("Bobby", "Butcher",0, p));
+		p.addHero(Factory.heroFactory("Poppy", "Butcher",0, p));
 
 		Character[] m = {Factory.monsterFactory(0, 1)};
 		for(Character c: m) {

@@ -76,6 +76,7 @@ public class Equipment {
 		return slot;
 	}
 	
+	@Override
 	public String toString() {
 		return name + "-" + type;
 	}

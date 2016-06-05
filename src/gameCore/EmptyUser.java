@@ -1,5 +1,7 @@
 package gameCore;
 
+import java.util.ArrayList;
+
 public class EmptyUser extends Character {
 
 	public EmptyUser() {
@@ -21,9 +23,15 @@ public class EmptyUser extends Character {
 	}
 
 	@Override
-	public Action attack(Character[] enemies) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Skill> getSkills() {
+	    // TODO Auto-generated method stub
+	    return null;
 	}
+
+//	@Override
+//	public Action attack(Character[] enemies) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 }

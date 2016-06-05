@@ -7,6 +7,7 @@ public class Action implements Comparable<Action> {
     private int raw, time;
     private double skillcharge, strChange, defChange, spdChange;
     private boolean revive;
+    private int userIndex;
     
     /* flavor text is something that can be printed out as the action is taken 
      * can contain the using charicter's name (e.g. "Hero Stabbed Monster")
@@ -60,6 +61,7 @@ public class Action implements Comparable<Action> {
         return user.getSpd();
     }
     
+    @Override
     public int compareTo(Action that) {
         return this.getSpeed() - that.getSpeed();
     }
@@ -77,5 +79,14 @@ public class Action implements Comparable<Action> {
         	System.out.println(user + " is defeated and can not act");
         }
     }
+    
+    public int getUser(){
+	return userIndex;
+    }
+    
+    public void setUserIndex(int i){
+	userIndex = i;
+    }
+    
     
 }

@@ -75,7 +75,12 @@ public class Skill {
     public int getID() {
     	return id;
     }
+    
+    public int getUses() {
+	return uses;
+    }
            
+    @Override
     public String toString() {
         return name;
     }
