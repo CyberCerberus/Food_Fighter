@@ -8,7 +8,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-
+import javax.sound.sampled.*;
 
 public class Sound {
     private static HashMap<String, Clip> clips;
@@ -21,28 +21,21 @@ public class Sound {
     }
 
     public static void load(String s, String n) {
-	if(clips.get(n) != null) return;
+	if (clips.get(n) != null)
+	    return;
 	Clip clip;
-	try {			
+	try {
 	    InputStream as = Sound.class.getResourceAsStream(s);
 	    InputStream bi = new BufferedInputStream(as);
 	    AudioInputStream ais = AudioSystem.getAudioInputStream(bi);
 	    AudioFormat baseFormat = ais.getFormat();
-	    AudioFormat decodeFormat = new AudioFormat(
-		    AudioFormat.Encoding.PCM_SIGNED,
-		    baseFormat.getSampleRate(),
-		    16,
-		    baseFormat.getChannels(),
-		    baseFormat.getChannels() * 2,
-		    baseFormat.getSampleRate(),
-		    false
-		    );
+	    AudioFormat decodeFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16,
+		    baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
 	    AudioInputStream dais = AudioSystem.getAudioInputStream(decodeFormat, ais);
 	    clip = AudioSystem.getClip();
 	    clip.open(dais);
 	    clips.put(n, clip);
-	}
-	catch(Exception e) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	}
     }
@@ -52,22 +45,30 @@ public class Sound {
     }
 
     public static void play(String s, int i) {
-	if(mute) return;
+	if (mute)
+	    return;
 	Clip c = clips.get(s);
-	if(c == null) return;
-	if(c.isRunning()) c.stop();
+	if (c == null)
+	    return;
+	if (c.isRunning())
+	    c.stop();
 	c.setFramePosition(i);
-	while(!c.isRunning()) c.start();
+	while (!c.isRunning())
+	    c.start();
     }
 
     public static void stop(String s) {
-	if(clips.get(s) == null) return;
-	if(clips.get(s).isRunning()) clips.get(s).stop();
+	if (clips.get(s) == null)
+	    return;
+	if (clips.get(s).isRunning())
+	    clips.get(s).stop();
     }
 
     public static void resume(String s) {
-	if(mute) return;
-	if(clips.get(s).isRunning()) return;
+	if (mute)
+	    return;
+	if (clips.get(s).isRunning())
+	    return;
 	clips.get(s).start();
     }
 
@@ -85,7 +86,8 @@ public class Sound {
 
     public static void loop(String s, int frame, int start, int end) {
 	stop(s);
-	if(mute) return;
+	if (mute)
+	    return;
 	clips.get(s).setLoopPoints(start, end);
 	clips.get(s).setFramePosition(frame);
 	clips.get(s).loop(Clip.LOOP_CONTINUOUSLY);
@@ -95,11 +97,22 @@ public class Sound {
 	clips.get(s).setFramePosition(frame);
     }
 
-    public static int getFrames(String s) { return clips.get(s).getFrameLength(); }
-    public static int getPosition(String s) { return clips.get(s).getFramePosition(); }
+    public static int getFrames(String s) {
+	return clips.get(s).getFrameLength();
+    }
+
+    public static int getPosition(String s) {
+	return clips.get(s).getFramePosition();
+    }
 
     public static void close(String s) {
 	stop(s);
 	clips.get(s).close();
     }
+    
+    public static void reduceVolume(String s, float f){
+	FloatControl fc = (FloatControl)clips.get(s).getControl(FloatControl.Type.MASTER_GAIN);
+	fc.setValue(f);
+    }
+
 }

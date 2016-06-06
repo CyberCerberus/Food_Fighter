@@ -3,6 +3,7 @@ package gameCore;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -187,6 +188,7 @@ public class Monster extends Character{
 		    liveHeroes++;
 		}
 	    }
+	    Collections.sort(ara);
 	    Character[] targets = new Character[liveHeroes];
 	    for(int j =0; j < liveHeroes; j++)
 		targets[j] = ara.get(j);

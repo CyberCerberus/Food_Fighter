@@ -16,6 +16,7 @@ public class BasicRoom extends Room {
     private Monster monster;
     private boolean monsterDiscovered;
     private boolean inCombat;
+    private int type;
 
 
     public BasicRoom(boolean[] walls) {
@@ -48,7 +49,7 @@ public class BasicRoom extends Room {
 
     }
 
-    public BasicRoom(int i, int in, int multi, int m, boolean[] walls, boolean end) {
+    public BasicRoom(int i, int in, int multi, int m, boolean[] walls, boolean end, int type) {
 	super();
 	item = i;
 	itemnum = in;
@@ -61,6 +62,7 @@ public class BasicRoom extends Room {
 	monsterDiscovered = false;
 	inCombat = false;
 	monster.setInCombat(false);
+	this.type = type;
 	initMap();
     }
 
@@ -131,30 +133,30 @@ public class BasicRoom extends Room {
 
 		if(discovered[c][r]){
 		    if(c == room.length/ 2 && r == 0 && getWalls()[2]){			
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20, 20, 20, null);
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20 - 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20 - 20, 20, 20, null);
 			//room[c][r] = 2;
 		    }
 		    else if(r == room[c].length / 2 && c == 0 && getWalls()[0]){
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20, 20, 20, null);
-			g.drawImage(Content.MONSTER_TILE, r * 20 - 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20 - 20, c * 20, 20, 20, null);
 			//room[c][r] = 2;
 		    }
 		    else if(c == room.length / 2 && r == room[c].length - 1 && getWalls()[3]){
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20, 20, 20, null);
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20 - 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20 - 20, 20, 20, null);
 			//room[c][r] = 2;
 		    }
 		    else if(r == room[c].length / 2 && c == room.length - 1 && getWalls()[1]){
-			g.drawImage(Content.MONSTER_TILE, r * 20, c * 20, 20, 20, null);
-			g.drawImage(Content.MONSTER_TILE, r * 20 - 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20, c * 20, 20, 20, null);
+			g.drawImage(Content.DOOR, r * 20 - 20, c * 20, 20, 20, null);
 			//room[c][r] = 2;
 		    }
 		    else if(c == 0 || r == 0 || c == room.length - 1 || r == room[c].length - 1){
 			g.drawImage(Content.WALL_TILE, r * 20, c * 20, 20, 20,null);	
 			//room[c][r] = 1;
 		    }
-		    else{
+		    else if(type == 0){
 			g.drawImage(Content.GRAVEL_TILE, r * 20, c * 20, 20, 20,null);
 			//room[c][r] = 0;
 		    }

@@ -7,7 +7,8 @@ import java.awt.Graphics2D;
 public class SanctuaryState extends State{
     private LevelState[] levelStates;
     private int currentChoice;
-       
+    private int timer;
+    
     public SanctuaryState(StateManager sm){
 	super(sm);
     }
@@ -15,13 +16,18 @@ public class SanctuaryState extends State{
     public void init() {
 	levelStates = getStateManager().getLevelStates();	
 	currentChoice = 0;
-	
-	
+	timer = 0;
+	Sound.load("/sound/sweetVictory.wav", "sv");
     }
 
     @Override
     public void update() {
 	handleInput();
+	
+	timer++;
+	if(timer == 1 && levelStates[0].cleared()){
+	    Sound.loop("sv");
+	}
 	
     }
 
@@ -110,6 +116,10 @@ public class SanctuaryState extends State{
 		currentChoice--;
 		Sound.play("menuoption");
 	    }
+	}
+	if(Keys.isPressed(Keys.ESCAPE)){
+	    Sound.stop("sv");
+	    getStateManager().setState(StateManager.MENU_STATE);
 	}
     }
 

@@ -1,13 +1,15 @@
 package gameCore;
 public class Action implements Comparable<Action> {
 	
-	private Character[] recievers;
+    private Character[] recievers;
     private Character user;
     private String flavtext;
     private int raw, time;
     private double skillcharge, strChange, defChange, spdChange;
     private boolean revive;
     private int userIndex;
+    private boolean friend;
+    private boolean hostile;
     
     /* flavor text is something that can be printed out as the action is taken 
      * can contain the using charicter's name (e.g. "Hero Stabbed Monster")
@@ -84,9 +86,21 @@ public class Action implements Comparable<Action> {
 	return userIndex;
     }
     
-    public void setUserIndex(int i){
-	userIndex = i;
+    public boolean friend(){
+	return friend;
     }
+    
+    public boolean hostile(){
+	return hostile;
+    }
+    
+    public void setUserIndex(int i, boolean friend, boolean hostile){
+	userIndex = i;
+	this.friend = friend;
+	this.hostile = hostile;
+    }
+    
+    
     
     
 }

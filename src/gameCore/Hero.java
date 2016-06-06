@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import main.Content;
 import main.ImageAnimation;
+import main.Sound;
 
 public class Hero extends Character{
     private ImageAnimation animation;
@@ -17,6 +18,7 @@ public class Hero extends Character{
     public Hero(String name, String className, int maxHP, int str, int def, int spd,
 	    Party p, Skill s1, Skill s2, Skill s3, int ec, LevelUpBuild b){
 	super(name, maxHP, str, def, spd);
+	
 	this.hp = maxHP;
 	this.className = className;
 	this.skill1 = s1;
@@ -81,6 +83,7 @@ public class Hero extends Character{
 
 		if(hp <= 0) { //killed
 		    System.out.printf("%s was defeated in battle\n", this);
+		    Sound.play("dead");
 		    hp = 0;
 		    killed();
 		}
@@ -376,19 +379,22 @@ public class Hero extends Character{
 	ret += skill3.display();
 	return ret;
     }
-    public void rewardExp(int exp) {
+    public boolean rewardExp(int exp) {
 	if(!isDead()) {
 	    curexp += exp;
-	    checkLvl();
+	    return checkLvl();
 	}
+	return false;
     }
-    private void checkLvl() {
+    private boolean checkLvl() {
 	if(curexp > nextLVUP) {
 	    System.out.println(this + " leveled up!");
 	    upStats(build);
-	    nextLVUP *= 2;
+	    nextLVUP *= 2;	    
 	    checkLvl();
+	    return true;
 	}
+	return false;
     }
 
     @Override

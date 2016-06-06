@@ -78,20 +78,23 @@ public class Map extends Observable{
     
      
     public void update(){
-
 	if(getCurrentRoom().getExplored() && navigator.moveRoom() != -1){
 	    int room = navigator.moveRoom();
 	    if(room == 2){
 		setCurrentRoom(startx - 1, starty);
+		navigator.moveRoom(-1);
 	    }
 	    else if(room == 3){
 		setCurrentRoom(startx, starty + 1);
+		navigator.moveRoom(-1);
 	    }
 	    else if(room == 4){
 		setCurrentRoom(startx + 1, starty);
+		navigator.moveRoom(-1);
 	    }
 	    else if(room == 5){
 		setCurrentRoom(startx, starty - 1);
+		navigator.moveRoom(-1);
 	    }
 	   
 	}

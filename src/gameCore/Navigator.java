@@ -86,6 +86,9 @@ public class Navigator{
 	return room.inCombat();
     }
     
+    public void moveRoom(int m){
+	moveRoom = m;
+    }
     private void detectCollision(){
 	
 	if(!room.getMonster().isDead()){
@@ -102,7 +105,7 @@ public class Navigator{
 		dy = 0;	
 		if(room.getExplored() && room.getCollisionType(nexty / 20, nextx / 20) == 3){
 		   moveRoom = 3;
-		   nexty = 180;
+		   nexty = 200;
 		}
 		else{
 		    nexty = y;
@@ -122,7 +125,7 @@ public class Navigator{
 		
 		if(room.getExplored() && room.getCollisionType(nexty / 20, nextx / 20) == 5){
 		   moveRoom = 5;
-		   nexty = 60;
+		   nexty = 40;
 		}
 		else{
 		    nexty = y;
@@ -142,7 +145,7 @@ public class Navigator{
 		
 		if(room.getExplored() && room.getCollisionType(nexty / 20, nextx / 20) == 4){
 		   moveRoom = 4;
-		   nextx = 60;
+		   nextx = 40;
 		}
 		else{
 		    nextx = x;
@@ -162,7 +165,7 @@ public class Navigator{
 		
 		if(room.getExplored() && room.getCollisionType(nexty / 20, nextx / 20) == 2){
 		   moveRoom = 2;
-		   nextx = 260;
+		   nextx = 280;
 		}
 		else{
 		    nextx = x;

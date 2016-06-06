@@ -89,10 +89,10 @@ public class Factory {
 	}
 	Room r = null;
 	if(type == 1) {
-	    r = new BasicRoom(item, itemn, multi, mon1, walls, end);
+	    r = new BasicRoom(item, itemn, multi, mon1, walls, end, type);
 	}
 	else {
-	    r = new BasicRoom(item, itemn, multi, mon1, walls, end);
+	    r = new BasicRoom(item, itemn, multi, mon1, walls, end, type);
 	}
 
 	return r;
@@ -169,33 +169,81 @@ public class Factory {
 	    switch(c){
 	    case "Butcher":
 		s1 = skillFactory(1);
-		s2 = skillFactory(15);
+		s2 = skillFactory(6);
 		s3 = skillFactory(4);
-		h = new Hero(name, c, 200, 60, 10, 25, p, s1, s2, s3, HEAVY, DEFBUILD);
+		h = new Hero(name, c, 185, 60 , 8, 20, p, s1, s2, s3, HEAVY, DEFBUILD);
 		break;
 	    case "Chef":
 		s1 = skillFactory(5);
 		s2 = skillFactory(10);
 		s3 = skillFactory(7);
-		h = new Hero(name, c, 170, 80, 8, 15, p, s1, s2, s3, MEDIUM, STRDEFBUILD);
+		h = new Hero(name, c, 150, 40, 10, 10, p, s1, s2, s3, MEDIUM, STRDEFBUILD);
 		break;
 	    case "Vegan":
 		s1 = skillFactory(8);
 		s2 = skillFactory(3);
-		s3 = skillFactory(14);
-		h = new Hero(name, c, 130, 25, 6, 10, p, s1, s2, s3, LIGHT, SPDBUILD);
+		s3 = skillFactory(9);
+		h = new Hero(name, c, 115, 25, 15, 7, p, s1, s2, s3, LIGHT, SPDBUILD);
 		break;
 	    case "Baker":
-		s1 = skillFactory(16);
+		s1 = skillFactory(5);
 		s2 = skillFactory(6);
-		s3 = skillFactory(2);
-		h = new Hero(name, c, 115, 35, 4, 5, p, s1, s2, s3, LIGHT, STRSPDBUILD);
+		s3 = skillFactory(12);
+		h = new Hero(name, c, 130, 35, 10, 10, p, s1, s2, s3, LIGHT, STRSPDBUILD);
 		break;
 	    }
 
 	}
 	return h;
     }
+    
+    public static Hero godFactory(String name, String c, int heronum, Party p) {
+   	//no need to use database just plug in the base values and skills
+   	Hero h = null;
+   	if(heronum == 1) {
+
+   	}
+   	else {
+   	    Skill s1 = null;
+   	    Skill s2 = null;
+   	    Skill s3 = null;
+   	    
+   	    /*
+   	     * Skill1: hostile
+   	     * Skill2: hostile
+   	     * Skill3: friendly
+   	     */
+
+   	    switch(c){
+   	    case "Butcher":
+   		s1 = skillFactory(1);
+   		s2 = skillFactory(6);
+   		s3 = skillFactory(5);
+   		h = new Hero(name, c, 1000, 1000 , 1000, 1, p, s1, s2, s3, HEAVY, DEFBUILD);
+   		break;
+   	    case "Chef":
+   		s1 = skillFactory(5);
+   		s2 = skillFactory(10);
+   		s3 = skillFactory(8);
+   		h = new Hero(name, c, 1000, 1000, 1000, 1, p, s1, s2, s3, MEDIUM, STRDEFBUILD);
+   		break;
+   	    case "Vegan":
+   		s1 = skillFactory(8);
+   		s2 = skillFactory(3);
+   		s3 = skillFactory(6);
+   		h = new Hero(name, c, 1000, 1000, 1000, 1, p, s1, s2, s3, LIGHT, SPDBUILD);
+   		break;
+   	    case "Baker":
+   		s1 = skillFactory(5);
+   		s2 = skillFactory(6);
+   		s3 = skillFactory(1);
+   		h = new Hero(name, c, 1000, 1000, 1000, 1, p, s1, s2, s3, LIGHT, STRSPDBUILD);
+   		break;
+   	    }
+
+   	}
+   	return h;
+       }
 
     static Skill skillFactory(int skillid) {
 	//SQL call to the skill table to get the relevant information

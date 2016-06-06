@@ -4,10 +4,13 @@ public abstract class LevelState extends State{
     
     private boolean cleared;
     private boolean unlocked;
+    private boolean godMode;
+    
     public LevelState(StateManager sm){
 	super(sm);
 	cleared = false;
 	unlocked = false;
+	godMode = false;
     }
    
 
@@ -25,6 +28,14 @@ public abstract class LevelState extends State{
    
    public void setUnlocked(boolean b){
        unlocked = b;
+   }
+   
+   public void toggleGodMode(){
+       godMode = !godMode;
+   }
+   
+   public boolean godMode(){
+       return godMode;
    }
 
 }
