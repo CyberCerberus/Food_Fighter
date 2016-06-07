@@ -65,7 +65,7 @@ public class Action implements Comparable<Action> {
     
     @Override
     public int compareTo(Action that) {
-        return this.getSpeed() - that.getSpeed();
+        return that.getSpeed() - this.getSpeed();
     }
     
     //if user died does nothing

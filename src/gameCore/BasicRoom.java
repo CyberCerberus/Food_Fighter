@@ -30,7 +30,7 @@ public class BasicRoom extends Room {
 	discovered = new boolean[GamePanel.HEIGHT/20][GamePanel.WIDTH/20];
 	monsterDiscovered = false;
 	inCombat = false;
-	initMap();
+	initTileRoomMap();
 
     }
 
@@ -45,7 +45,7 @@ public class BasicRoom extends Room {
 	discovered = new boolean[GamePanel.HEIGHT/20][GamePanel.WIDTH/20];
 	monsterDiscovered = false;
 	inCombat = false;
-	initMap();
+	initTileRoomMap();
 
     }
 
@@ -63,10 +63,10 @@ public class BasicRoom extends Room {
 	inCombat = false;
 	monster.setInCombat(false);
 	this.type = type;
-	initMap();
+	initTileRoomMap();
     }
 
-    private void initMap(){
+    private void initTileRoomMap(){
 	for(int c = 0; c < room.length; c++){
 	    for(int r = 0; r < room[c].length; r++){
 
@@ -153,11 +153,11 @@ public class BasicRoom extends Room {
 			//room[c][r] = 2;
 		    }
 		    else if(c == 0 || r == 0 || c == room.length - 1 || r == room[c].length - 1){
-			g.drawImage(Content.WALL_TILE, r * 20, c * 20, 20, 20,null);	
+			g.drawImage(Content.GRAVEL_TILE, r * 20, c * 20, 20, 20,null);	
 			//room[c][r] = 1;
 		    }
 		    else if(type == 0){
-			g.drawImage(Content.GRAVEL_TILE, r * 20, c * 20, 20, 20,null);
+			g.drawImage(Content.WALL_TILE, r * 20, c * 20, 20, 20,null);
 			//room[c][r] = 0;
 		    }
 

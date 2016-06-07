@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
@@ -47,6 +48,10 @@ public class CombatState extends State {
     private String[] leveled;
     private boolean awarded;
     private boolean hostileAbility;
+    private AlphaComposite hide;
+    private AlphaComposite show;
+    private boolean toggleShow;
+    private int keyPressTimer;
 
     public CombatState(StateManager sm) {
 	super(sm);
@@ -93,6 +98,10 @@ public class CombatState extends State {
 	Sound.load("/sound/gb.wav", "gotcha");
 	Sound.load("/sound/heal.wav", "heal");
 	Sound.reduceVolume("menu", -10);
+	hide = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.0f);
+	show = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+	toggleShow = true;
+	keyPressTimer = 0;
 
 	for (Character c : party.toArray()) {
 	    for (Skill s : c.getSkills()) {
@@ -104,6 +113,7 @@ public class CombatState extends State {
 
     @Override
     public void update() {
+
 	party.update();
 	monster.update();
 	if (monster.isDead()) {
@@ -128,17 +138,19 @@ public class CombatState extends State {
 	    }
 
 	    // Setting current Hero's turn.
-	    if (currentHero >= c.length || (party.toArray()[currentHero].isDead() && currentHero == 0)) {
-		for (int i = 0; i < c.length; i++) {
-		    if (!c[i].isDead()) {
-			currentHero = i;
-			break;
-		    }
-		}
-		if (currentHero >= c.length) {
-		    allDead = true;
-		}
-	    }
+	    // if (currentHero >= c.length ||
+	    // (party.toArray()[currentHero].isDead() && currentHero == 0)) {
+	    // for (int i = 0; i < c.length; i++) {
+	    // if (!c[i].isDead()) {
+	    // currentHero = i;
+	    // break;
+	    // }
+	    // }
+	    // if (currentHero >= c.length) {
+	    // allDead = true;
+	    // }
+	    // }
+	    chooseHero();
 
 	    if (readyHeros >= alive && !allDead) {
 		chooseAction = false;
@@ -154,16 +166,14 @@ public class CombatState extends State {
 			timer2++;
 			friend = moves.get(0).friend();
 			hostileAbility = moves.get(0).hostile();
-			if (timer2 == 1 && friend && hostileAbility) {
+			heroCasting = moves.get(0).getUser();
+			if (timer2 == 1 && friend && hostileAbility && !party.toArray()[heroCasting].isDead()) {
 			    Sound.play("eat");
 			} else if (timer2 == 1 && !friend) {
 			    Sound.play("fire");
-			}
-			else if(timer2 == 1 && !hostileAbility){
+			} else if (timer2 == 1 && !hostileAbility) {
 			    Sound.play("heal");
 			}
-			
-			heroCasting = moves.get(0).getUser();
 			if (timer2 > 200) {
 			    timer2 = 0;
 			    casted[heroCasting]++;
@@ -249,6 +259,18 @@ public class CombatState extends State {
 	    g.drawString("Speed: " + spd, 0, 50);
 
 	    // MENU
+
+	    if (chooseAction) {
+		g.setColor(Color.WHITE);
+		g.drawString("E - Hide", 250, 20);
+	    }
+
+	    if (toggleShow) {
+		g.setComposite(show);
+	    } else {
+		g.setComposite(hide);
+	    }
+	    g.setColor(Color.BLACK);
 	    g.drawImage(Content.COMBAT_MENU, x, y, 100, height, null);
 
 	    for (int i = 0; i < optionsLength; i++) {
@@ -309,9 +331,9 @@ public class CombatState extends State {
 		}
 
 	    } else {
-		 g.drawImage(heal.getImage(), party.toArray()[heroCasting].getPosition()[0] - 10, 
-			 party.toArray()[heroCasting].getPosition()[1], 25, 25, null);
-		 heal.update();
+		g.drawImage(heal.getImage(), party.toArray()[heroCasting].getPosition()[0] - 10,
+			party.toArray()[heroCasting].getPosition()[1], 25, 25, null);
+		heal.update();
 	    }
 	}
 
@@ -506,10 +528,35 @@ public class CombatState extends State {
 	    chooseItem = false;
 	    chooseSkill = false;
 	}
-	
-	if(Keys.keyState[Keys.BUTTON1]){
+
+	if (Keys.keyState[Keys.BUTTON2]) {
+	    keyPressTimer++;
+
+	    if (keyPressTimer > 5) {
+		toggleShow = !toggleShow;
+		keyPressTimer = 0;
+	    }
+
+	}
+
+	if (Keys.keyState[Keys.BUTTON1]) {
 	    Sound.stop("combat");
 	    getStateManager().setState(StateManager.MENU_STATE);
+	}
+
+    }
+
+    private void chooseHero() {
+	if (currentHero >= party.toArray().length) {
+	    currentHero = 0;
+	}
+
+	if (!party.toArray()[currentHero].isDead() || allDead) {
+	    return;
+	}
+	if (party.toArray()[currentHero].isDead() || !allDead) {
+	    currentHero++;
+	    chooseHero();
 	}
 
     }

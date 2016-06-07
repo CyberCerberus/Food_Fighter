@@ -171,7 +171,7 @@ public class Factory {
 		s1 = skillFactory(1);
 		s2 = skillFactory(6);
 		s3 = skillFactory(4);
-		h = new Hero(name, c, 185, 60 , 8, 20, p, s1, s2, s3, HEAVY, DEFBUILD);
+		h = new Hero(name, c, 185, 60 , 8, 7, p, s1, s2, s3, HEAVY, DEFBUILD);
 		break;
 	    case "Chef":
 		s1 = skillFactory(5);
@@ -183,7 +183,7 @@ public class Factory {
 		s1 = skillFactory(8);
 		s2 = skillFactory(3);
 		s3 = skillFactory(9);
-		h = new Hero(name, c, 115, 25, 15, 7, p, s1, s2, s3, LIGHT, SPDBUILD);
+		h = new Hero(name, c, 115, 25, 15, 20, p, s1, s2, s3, LIGHT, SPDBUILD);
 		break;
 	    case "Baker":
 		s1 = skillFactory(5);

@@ -614,14 +614,14 @@ public class SQL {
      		     + ";"
      		     + ""
      		     + "INSERT INTO Levels (levelid, name, width, height, multi)"
-     		     + "VALUES (0, 'Restaurant Le Dungeon', 2, 2, 2)"
+     		     + "VALUES (0, 'Restaurant Le Dungeon', 2, 2, 1)"
      		     + ";"
      		     + ""
      		     + "INSERT INTO Rooms (levelid, x, y, walls,exits,type,reward,"
      		     + "rewardnum, mon1, mon2, mon3, mon4)"
-     		     + "VALUES (0, 0, 0, 1, -1, 0, 1, 20, 1, -1, -1, -1),"
-     		     + "(0, 0, 1, 10, 0, 0, 4, 10, 2, -1, -1, -1),"
-     		     + "(0, 1, 1, 4, 1, 0, 3, 100, 5, -1, -1, -1)"
+     		     + "VALUES (0, 0, 0, 1, -1, 0, 1, 4, 3, -1, -1, -1),"
+     		     + "(0, 0, 1, 10, 0, 0, 4, 4, 4, -1, -1, -1),"
+     		     + "(0, 1, 1, 4, 1, 0, 3, 1000000000, 5, -1, -1, -1)"
      		     + ";";
 	      stmt.executeUpdate(sql);
 	      stmt.close();
